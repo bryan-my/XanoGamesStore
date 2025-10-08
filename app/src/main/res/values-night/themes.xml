@@ -1,0 +1,4 @@
+<resources>
+    <style name="Theme.Xano" parent="Theme.MaterialComponents.DayNight.NoActionBar"/>
+    <style name="Theme.Xano.NoActionBar" parent="Theme.Xano"/>
+</resources>

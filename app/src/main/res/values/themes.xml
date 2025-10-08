@@ -1,0 +1,11 @@
+<resources>
+    <!-- Tema base de la app -->
+    <style name="Theme.Xano" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Puedes personalizar colores si quieres; no es obligatorio -->
+        <!-- <item name="colorPrimary">@color/purple_500</item> -->
+        <!-- <item name="colorSecondary">@color/teal_200</item> -->
+    </style>
+
+    <!-- Tema que usa el Manifest -->
+    <style name="Theme.Xano.NoActionBar" parent="Theme.Xano"/>
+</resources>
