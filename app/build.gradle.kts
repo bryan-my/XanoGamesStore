@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.hanoum.xanogamestore"
+    namespace = "com.miapp.xanogamestore"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.hanoum.xanogamestore"
+        applicationId = "com.miapp.xanogamestore"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -25,9 +25,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
         debug { isMinifyEnabled = false }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
