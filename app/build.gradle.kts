@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.miapp.xanogamestore"
+    namespace = "com.miapp.xanogamesstore"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.miapp.xanogamestore"
+        applicationId = "com.miapp.xanogamesstore"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.miapp.xanogamestore">
+    package="com.miapp.xanogamesstore">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -11,12 +11,12 @@
 
         <!-- Pantalla principal con bottom nav -->
         <activity
-            android:name=".ui.HomeActivity"
+            android:name="com.miapp.xanogamesstore.ui.HomeActivity"
             android:exported="false" />
 
         <!-- Login (launcher) -->
         <activity
-            android:name=".ui.LoginActivity"
+            android:name="com.miapp.xanogamesstore.ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

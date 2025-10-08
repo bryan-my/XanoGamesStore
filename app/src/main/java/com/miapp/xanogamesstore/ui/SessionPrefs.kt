@@ -1,4 +1,4 @@
-package com.miapp.xanogamestore.ui
+package com.miapp.xanogamesstore.ui
 
 import android.content.Context
 
