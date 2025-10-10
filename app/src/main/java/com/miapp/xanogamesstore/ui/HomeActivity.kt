@@ -32,5 +32,19 @@ class HomeActivity : AppCompatActivity() {
             }
             true
         }
+        val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
+        fun setTitle(t: String) { toolbar.title = t }
+
+        if (savedInstanceState == null) { show(ProfileFragment()); setTitle("Perfil") }
+
+        bottom.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_profile  -> { show(ProfileFragment()); setTitle("Perfil") }
+                R.id.nav_products -> { show(ProductsFragment()); setTitle("Productos") }
+                R.id.nav_add      -> { show(AddProductFragment()); setTitle("Agregar") }
+            }
+            true
+        }
     }
+
 }

@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
-import com.miapp.xanogamestore.api.AuthService
+import com.miapp.xanogamesstore.api.AuthService
 import com.miapp.xanogamesstore.model.LoginRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
