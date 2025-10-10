@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.miapp.xanogamestore.R
+import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamestore.api.AuthService
 import com.miapp.xanogamesstore.model.LoginRequest
@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
