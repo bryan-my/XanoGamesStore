@@ -4,45 +4,79 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.miapp.xanogamesstore.R
+import com.miapp.xanogamesstore.api.ApiClient
+import com.miapp.xanogamesstore.api.AuthService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import android.content.Intent
+import android.widget.Button
+// importa tu LoginActivity
+import com.miapp.xanogamesstore.ui.LoginActivity
+// importa tu SessionPrefs
+import com.miapp.xanogamesstore.ui.SessionPrefs
 
-/**
- * Versión base: muestra el email y el estado del token.
- * No hace llamadas de red; solo lee SessionPrefs.
- */
 class ProfileFragment : Fragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+    private lateinit var tvName: TextView
+    private lateinit var btnLogout: Button
+    private lateinit var session: SessionPrefs
+    private lateinit var tvEmail: TextView
+    private lateinit var progress: ProgressBar
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
+        val v = inflater.inflate(R.layout.fragment_profile, container, false)
+        tvName = v.findViewById(R.id.tvName)
+        tvEmail = v.findViewById(R.id.tvEmail)
+        progress = v.findViewById(R.id.progress)
+        btnLogout = v.findViewById(R.id.btnLogout)
+        session = SessionPrefs(requireContext())
+
+        btnLogout.setOnClickListener { logout() }
+        return v
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
+        loadMe()
+    }
 
-        val tvEmail: TextView = view.findViewById(R.id.tvEmail)
-        val tvTokenStatus: TextView = view.findViewById(R.id.tvTokenStatus)
-        val btnLogout: Button = view.findViewById(R.id.btnLogout)
-
-        val session = SessionPrefs(requireContext())
-
-        // En la base solo mostramos si hay token o no.
-        val token = session.authToken
-        tvTokenStatus.text = if (token.isNullOrEmpty()) "Sin sesión" else "Sesión activa"
-
-        // Si guardabas el email en prefs, puedes setearlo aquí.
-        // En la base lo dejamos vacío o un placeholder.
-        tvEmail.text = session.authToken?.let { "Usuario" } ?: "Invitado"
-
-        btnLogout.setOnClickListener {
-            session.authToken = null
-            tvTokenStatus.text = "Sin sesión"
+    private fun loadMe() {
+        progress.visibility = View.VISIBLE
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val api = ApiClient.auth(requireContext()).create(AuthService::class.java)
+                val me = withContext(Dispatchers.IO) { api.me() }
+                tvName.text = me.name ?: "(Sin nombre)"
+                tvEmail.text = me.email
+            } catch (e: Exception) {
+                if (e is HttpException && e.code() == 401) {
+                    Toast.makeText(requireContext(), "Sesión expirada. Inicia sesión de nuevo.", Toast.LENGTH_LONG).show()
+                    // aquí si quieres navega a LoginActivity
+                } else {
+                    Toast.makeText(requireContext(), e.message ?: "Error al cargar perfil", Toast.LENGTH_LONG).show()
+                }
+            } finally {
+                progress.visibility = View.GONE
+            }
         }
+    }
+    private fun logout() {
+        // borra credenciales
+        session.authToken = null
+
+        // envía a Login y limpia el back stack
+        val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+        requireActivity().finish()
     }
 }
