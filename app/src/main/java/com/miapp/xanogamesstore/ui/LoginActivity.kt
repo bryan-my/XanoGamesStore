@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.api.AuthService
-import com.miapp.xanogamesstore.api.LoginBody
+import com.miapp.xanogamesstore.model.LoginBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,16 +53,17 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val api = ApiClient.auth(this@LoginActivity).create(AuthService::class.java)
-                val res = withContext(Dispatchers.IO) { api.login(LoginBody(email, password)) }
-                // guarda token (campo: authToken)
-                session.authToken = res.authToken
+                val resp = withContext(Dispatchers.IO) {
+                    api.login(LoginBody(email, password))
+                }
+                session.authToken = resp.authToken  // guarda token
 
                 startActivity(
                     Intent(this@LoginActivity, HomeActivity::class.java).apply {
-                        // Opcional: limpia el back stack para que no vuelva a Login con “back”
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     }
                 )
+                finish()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@LoginActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()

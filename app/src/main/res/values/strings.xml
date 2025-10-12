@@ -3,4 +3,8 @@
     <string name="welcome_name">Hola, %1$s</string>
     <string name="user_generic">usuario</string>
     <string name="product_image">Imagen del producto</string>
+    <string name="title_profile">Perfil</string>
+    <string name="title_products">Productos</string>
+    <string name="title_add">Agregar</string>
+    <string name="title_cart">Carrito</string>
 </resources>

@@ -18,10 +18,6 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import android.content.Intent
 import android.widget.Button
-// importa tu LoginActivity
-import com.miapp.xanogamesstore.ui.LoginActivity
-// importa tu SessionPrefs
-import com.miapp.xanogamesstore.ui.SessionPrefs
 
 class ProfileFragment : Fragment() {
 

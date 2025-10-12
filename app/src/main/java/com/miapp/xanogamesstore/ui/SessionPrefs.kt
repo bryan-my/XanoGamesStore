@@ -10,4 +10,8 @@ class SessionPrefs(context: Context) {
     var authToken: String?
         get() = prefs.getString("auth_token", null)
         set(value) { prefs.edit().putString("auth_token", value).apply() }
+
+    var userRole: String?
+        get() = prefs.getString("user_role", null)
+        set(value) { prefs.edit().putString("user_role", value).apply() }
 }
