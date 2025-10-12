@@ -10,7 +10,7 @@ data class CreateProductBody(
     val stock: Int,
     val brand: String,
     val category: String,
-    // Xano espera un array de objetos { path: "/file/..." }
+    // Xano product.image es [image], así que enviamos una lista
     val image: List<Map<String, String>> = emptyList()
 )
 

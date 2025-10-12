@@ -13,25 +13,33 @@ object ApiClient {
             .addInterceptor(AuthInterceptor(context))
             .build()
 
-    // Grupo Authentication (login)
+    // === Grupo Authentication ===
     fun auth(context: Context): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.XANO_BASE_AUTH) // /api:300741/
+            .baseUrl(BuildConfig.XANO_BASE_AUTH) // .../api:ObzeKtl9/
             .client(baseClient(context))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-    // Grupo E-commerce Backend API (#300742)
+    // === Grupo Upload ===
+    fun upload(context: Context): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.XANO_BASE_UPLOAD) // .../api:-ukB1aW3/
+            .client(baseClient(context))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+    // === Grupo E-commerce Backend API ===
     fun shop(context: Context): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.XANO_BASE_SHOP) // /api:300742/
+            .baseUrl(BuildConfig.XANO_BASE_SHOP) // .../api:c_UHqNA3/
             .client(baseClient(context))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-    // Convierte paths de Xano (ej. "/file/abc...") a URL absoluta
+    // Convierte path de Xano a URL absoluta servible
     fun fileUrl(path: String?): String? {
         if (path.isNullOrBlank()) return null
-        return if (path.startsWith("http")) path else BuildConfig.XANO_ORIGIN+ path
+        return if (path.startsWith("http")) path else BuildConfig.XANO_ORIGIN + path
     }
 }

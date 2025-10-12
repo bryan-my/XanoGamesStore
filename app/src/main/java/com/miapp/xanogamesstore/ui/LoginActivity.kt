@@ -30,7 +30,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         session = SessionPrefs(this)
-
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
@@ -41,27 +40,29 @@ class LoginActivity : AppCompatActivity() {
 
     private fun doLogin() {
         val email = etEmail.text.toString().trim()
-        val password = etPassword.text.toString().trim()
+        val password = etPassword.text.toString()
 
-        if (email.isEmpty()) { etEmail.error = "Requerido"; return }
-        if (password.isEmpty()) { etPassword.error = "Requerido"; return }
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Completa email y password", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        progress.visibility = View.VISIBLE
         btnLogin.isEnabled = false
+        progress.visibility = View.VISIBLE
 
         lifecycleScope.launch {
             try {
                 val api = ApiClient.auth(this@LoginActivity).create(AuthService::class.java)
-                val resp = withContext(Dispatchers.IO) {
-                    api.login(LoginBody(email, password))
-                }
-                // guardar token
-                session.authToken = resp.authToken
+                val res = withContext(Dispatchers.IO) { api.login(LoginBody(email, password)) }
+                // guarda token (campo: authToken)
+                session.authToken = res.authToken
 
-                // ir a Home
-                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                finish()
-
+                startActivity(
+                    Intent(this@LoginActivity, HomeActivity::class.java).apply {
+                        // Opcional: limpia el back stack para que no vuelva a Login con “back”
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    }
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@LoginActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()

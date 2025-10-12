@@ -15,11 +15,8 @@ import com.miapp.xanogamesstore.api.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MultipartBody
 
 class AddProductFragment : Fragment() {
-
-    private var selectedImageUri: Uri? = null
 
     private lateinit var etName: EditText
     private lateinit var etDescription: EditText
@@ -27,20 +24,23 @@ class AddProductFragment : Fragment() {
     private lateinit var etStock: EditText
     private lateinit var etBrand: EditText
     private lateinit var etCategory: EditText
-    private lateinit var ivPreview: ImageView
     private lateinit var btnPick: Button
     private lateinit var btnSave: Button
+    private lateinit var ivPreview: ImageView
     private lateinit var progress: ProgressBar
 
-    private val pickImageLauncher =
-        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
+    private var selectedImageUri: Uri? = null
+
+    private val picker = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
             selectedImageUri = uri
             ivPreview.setImageURI(uri)
         }
+    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
         val v = inflater.inflate(R.layout.fragment_add_product, container, false)
         etName = v.findViewById(R.id.etName)
         etDescription = v.findViewById(R.id.etDescription)
@@ -59,7 +59,7 @@ class AddProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         btnPick.setOnClickListener {
-            pickImageLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
         btnSave.setOnClickListener { createProduct() }
@@ -67,48 +67,55 @@ class AddProductFragment : Fragment() {
 
     private fun createProduct() {
         val name = etName.text.toString().trim()
-        val desc = etDescription.text.toString().trim()
-        val price = etPrice.text.toString().trim().toDoubleOrNull()
-        val stock = etStock.text.toString().trim().toIntOrNull()
+        val description = etDescription.text.toString().trim()
+        val price = etPrice.text.toString().toDoubleOrNull()
+        val stock = etStock.text.toString().toIntOrNull()
         val brand = etBrand.text.toString().trim()
         val category = etCategory.text.toString().trim()
 
-        if (name.isEmpty()) { etName.error = "Requerido"; return }
-        if (desc.isEmpty()) { etDescription.error = "Requerido"; return }
-        if (price == null) { etPrice.error = "Número inválido"; return }
-        if (stock == null) { etStock.error = "Número inválido"; return }
+        if (name.isEmpty() || description.isEmpty() || price == null || stock == null) {
+            Toast.makeText(requireContext(), "Completa los campos obligatorios", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        progress.visibility = View.VISIBLE
         btnSave.isEnabled = false
+        progress.visibility = View.VISIBLE
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // 1) Subir imagen (opcional)
-                val uploadApi = ApiClient.shop(requireContext()).create(UploadService::class.java)
-                val part: MultipartBody.Part? = selectedImageUri?.let {
-                    uriToMultipart(requireContext().contentResolver, it, "file")
-                }
-                val uploaded: UploadResponse? = if (part != null) {
-                    withContext(Dispatchers.IO) { uploadApi.upload(part) }
-                } else null
+                // 1) Subir imagen (si hay)
+                var imageList: List<Map<String, String>> = emptyList()
+                selectedImageUri?.let { uri ->
+                    val part = uriToMultipart(requireContext().contentResolver, uri)
+                    val uploadApi = ApiClient.upload(requireContext()).create(UploadService::class.java)
+                    val up = withContext(Dispatchers.IO) { uploadApi.upload(part) }
 
-                // 2) Crear producto (POST /product)
-                val productApi = ApiClient.shop(requireContext()).create(ProductService::class.java)
+                    // usar path devuelto por Xano Upload
+                    imageList = listOf(mapOf("path" to up.path))
+                }
+
+                // 2) Crear producto con image = [{ path }]
+                val shopApi = ApiClient.shop(requireContext()).create(ProductService::class.java)
                 val body = CreateProductBody(
                     name = name,
-                    description = desc,
+                    description = description,
                     price = price,
                     stock = stock,
                     brand = brand,
                     category = category,
-                    image = uploaded?.file?.path?.let { listOf(mapOf("path" to it)) } ?: emptyList()
+                    image = imageList
                 )
-                withContext(Dispatchers.IO) { productApi.addProduct(body) }
+                withContext(Dispatchers.IO) { shopApi.addProduct(body) }
 
-                // limpiar UI
-                etName.setText(""); etDescription.setText(""); etPrice.setText("")
-                etStock.setText(""); etBrand.setText(""); etCategory.setText("")
-                ivPreview.setImageDrawable(null); selectedImageUri = null
+                // 3) limpiar UI
+                etName.setText("")
+                etDescription.setText("")
+                etPrice.setText("")
+                etStock.setText("")
+                etBrand.setText("")
+                etCategory.setText("")
+                ivPreview.setImageDrawable(null)
+                selectedImageUri = null
                 Toast.makeText(requireContext(), "Producto creado", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {

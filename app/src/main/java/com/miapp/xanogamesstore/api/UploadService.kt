@@ -5,8 +5,13 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 
-data class UploadFile(val path: String)
-data class UploadResponse(val file: UploadFile)
+// Xano Upload suele devolver al menos { "path": "/uploads/..." }
+// dependiendo del bloque puede incluir "url" o "id".
+data class UploadResponse(
+    val path: String,
+    val url: String? = null,
+    val id: Long? = null
+)
 
 interface UploadService {
     @Multipart

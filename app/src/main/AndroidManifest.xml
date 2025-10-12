@@ -19,7 +19,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Pantalla principal post-login -->
+        <activity
+            android:name=".ui.HomeActivity"
+            android:exported="true"/>
     </application>
+
+
 
 
 
