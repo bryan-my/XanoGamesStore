@@ -1,69 +1,52 @@
 package com.miapp.xanogamesstore.ui
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.miapp.xanogamesstore.R
-import com.miapp.xanogamesstore.ui.adapter.ProductAdapter
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.api.ProductService
-import kotlinx.coroutines.*
+import com.miapp.xanogamesstore.model.Product
+import com.miapp.xanogamesstore.ui.adapter.ProductAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProductsFragment : Fragment() {
 
-    private lateinit var adapter: ProductAdapter
+    private lateinit var list: RecyclerView
     private lateinit var progress: ProgressBar
-    private lateinit var service: ProductService
-    private var searchJob: Job? = null
+    private val items = mutableListOf<Product>()
+    private val adapter = ProductAdapter(items)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_products, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
+        val v = inflater.inflate(R.layout.fragment_products, container, false)
+        list = v.findViewById(R.id.recycler)
+        progress = v.findViewById(R.id.progress)
+        list.layoutManager = LinearLayoutManager(requireContext())
+        list.adapter = adapter
+        return v
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Retrofit con token si hay sesión
-        val retrofit = ApiClient.createRetrofit { SessionPrefs.getToken(requireContext()) }
-        service = retrofit.create(ProductService::class.java)
-
-        progress = view.findViewById(R.id.progress)
-
-        val rv = view.findViewById<RecyclerView>(R.id.rvProducts)
-        rv.layoutManager = LinearLayoutManager(requireContext())
-        adapter = ProductAdapter()
-        rv.adapter = adapter
-
-        val sv = view.findViewById<SearchView>(R.id.searchView)
-        sv.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean { fetch(query); return true }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                searchJob?.cancel()
-                searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(300)      // debounce
-                    fetch(newText)
-                }
-                return true
-            }
-        })
-
-        fetch(null) // carga inicial
+    override fun onResume() {
+        super.onResume()
+        load()
     }
 
-    private fun fetch(query: String?) {
+    private fun load() {
+        progress.visibility = View.VISIBLE
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                progress.visibility = View.VISIBLE
-                val data = withContext(Dispatchers.IO) { service.getProducts(query) }
-                adapter.submit(data)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                val api = ApiClient.shop(requireContext()).create(ProductService::class.java)
+                val data = withContext(Dispatchers.IO) { api.getProducts() }
+                adapter.replaceAll(data)
+            } catch (_: Exception) {
             } finally {
                 progress.visibility = View.GONE
             }

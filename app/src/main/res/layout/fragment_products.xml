@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <!-- Usa la SearchView de AppCompat para evitar ClassCastException -->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
-        android:queryHint="Buscar videojuegos…"
-        android:iconifiedByDefault="false"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent" android:layout_height="match_parent"/>
 
     <ProgressBar
         android:id="@+id/progress"
-        android:visibility="gone"
         android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvProducts"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-</LinearLayout>
+        android:visibility="gone"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</FrameLayout>

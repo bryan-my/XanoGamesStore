@@ -1,23 +1,19 @@
 package com.miapp.xanogamesstore.model
 
-/* Adapta los nombres a los campos de tu tabla Xano si difieren */
-data class Product(
-    val id: Int? = null,
-    val name: String,
-    val description: String,
-    val price: Double,
-    val stock: Int,
-    val brand: String? = null,
-    val category: String? = null,
-    val images: List<String>? = null
+data class XanoImage(
+    val path: String? = null,   // normalmente viene este
+    val name: String? = null,
+    val mime: String? = null,
+    val size: Long? = null
 )
 
-data class CreateProductRequest(
+data class Product(
+    val id: Int,
     val name: String,
     val description: String,
     val price: Double,
     val stock: Int,
-    val brand: String? = null,
-    val category: String? = null,
-    val images: List<String> = emptyList()
+    val brand: String,
+    val category: String,
+    val image: List<XanoImage>? = emptyList()
 )

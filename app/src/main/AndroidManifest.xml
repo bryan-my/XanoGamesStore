@@ -11,7 +11,7 @@
         android:theme="@style/Theme.Xano.NoActionBar">
         <!-- PANTALLA INICIAL TEMPORAL: HomeActivity -->
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -19,12 +19,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Login (sin launcher por ahora) -->
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="true" />
     </application>
-
 
 
 

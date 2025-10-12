@@ -4,26 +4,20 @@ import android.content.ContentResolver
 import android.net.Uri
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okio.BufferedSink
-import okio.source
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.io.FileOutputStream
 
 fun uriToMultipart(
     resolver: ContentResolver,
     uri: Uri,
     partName: String = "file",
-    fileName: String = "image.jpg"
+    fileName: String = "upload_${System.currentTimeMillis()}"
 ): MultipartBody.Part {
-    val type = resolver.getType(uri) ?: "image/jpeg"
-
-    val requestBody = object : RequestBody() {
-        override fun contentType() = type.toMediaTypeOrNull()
-        override fun writeTo(sink: BufferedSink) {
-            resolver.openInputStream(uri)?.use { input ->
-                sink.writeAll(input.source())
-            }
-        }
-    }
-    return MultipartBody.Part.createFormData(partName, fileName, requestBody)
+    val input = resolver.openInputStream(uri)!!
+    val tmp = File.createTempFile("xano_", fileName)
+    FileOutputStream(tmp).use { out -> input.copyTo(out) }
+    val media = resolver.getType(uri) ?: "application/octet-stream"
+    val body = tmp.asRequestBody(media.toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData(partName, tmp.name, body)
 }

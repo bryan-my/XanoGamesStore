@@ -1,37 +1,13 @@
 package com.miapp.xanogamesstore.ui
 
 import android.content.Context
+import android.content.SharedPreferences
 
-object SessionPrefs {
-    private const val FILE = "session_prefs"
-    private const val KEY_TOKEN = "token"
-    private const val KEY_USERNAME = "username"
-    private const val KEY_EMAIL = "email"
+class SessionPrefs(context: Context) {
+    private val prefs: SharedPreferences =
+        context.getSharedPreferences("session_prefs", Context.MODE_PRIVATE)
 
-    fun saveToken(ctx: Context, token: String) =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-            .edit().putString(KEY_TOKEN, token).apply()
-
-    fun getToken(ctx: Context): String? =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-            .getString(KEY_TOKEN, null)
-
-    fun saveUsername(ctx: Context, name: String?) =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-            .edit().putString(KEY_USERNAME, name ?: "").apply()
-
-    fun getUsername(ctx: Context): String =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-            .getString(KEY_USERNAME, "") ?: ""
-
-    fun saveEmail(ctx: Context, email: String) =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-            .edit().putString(KEY_EMAIL, email).apply()
-
-    fun getEmail(ctx: Context): String =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
-            .getString(KEY_EMAIL, "") ?: ""
-
-    fun clear(ctx: Context) =
-        ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().clear().apply()
+    var authToken: String?
+        get() = prefs.getString("auth_token", null)
+        set(value) { prefs.edit().putString("auth_token", value).apply() }
 }
