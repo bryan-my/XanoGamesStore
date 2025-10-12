@@ -5,16 +5,27 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 
-// Xano Upload suele devolver al menos { "path": "/uploads/..." }
-// dependiendo del bloque puede incluir "url" o "id".
+// Tu /upload devuelve este objeto (según tu captura)
+data class UploadMeta(
+    val width: Int? = null,
+    val height: Int? = null
+)
+
 data class UploadResponse(
+    val access: String? = null,
     val path: String,
-    val url: String? = null,
-    val id: Long? = null
+    val name: String? = null,
+    val type: String? = null,
+    val size: Long? = null,
+    val mime: String? = null,
+    val meta: UploadMeta? = null
 )
 
 interface UploadService {
     @Multipart
     @POST("upload")
-    suspend fun upload(@Part file: MultipartBody.Part): UploadResponse
+    suspend fun upload(
+        // NOMBRE EXACTO DEL CAMPO QUE ESPERA XANO: "content"
+        @Part content: MultipartBody.Part
+    ): UploadResponse
 }

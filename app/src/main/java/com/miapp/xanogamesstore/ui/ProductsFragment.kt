@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,8 +46,11 @@ class ProductsFragment : Fragment() {
             try {
                 val api = ApiClient.shop(requireContext()).create(ProductService::class.java)
                 val data = withContext(Dispatchers.IO) { api.getProducts() }
+                // sin named arg, por si la firma del adapter es replaceAll(list)
                 adapter.replaceAll(data)
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), e.message ?: "Error cargando productos", Toast.LENGTH_LONG).show()
             } finally {
                 progress.visibility = View.GONE
             }

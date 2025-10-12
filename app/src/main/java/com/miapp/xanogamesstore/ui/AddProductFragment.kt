@@ -1,7 +1,9 @@
 package com.miapp.xanogamesstore.ui
 
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,7 +76,8 @@ class AddProductFragment : Fragment() {
         val category = etCategory.text.toString().trim()
 
         if (name.isEmpty() || description.isEmpty() || price == null || stock == null) {
-            Toast.makeText(requireContext(), "Completa los campos obligatorios", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Completa los campos obligatorios", Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
@@ -83,18 +86,17 @@ class AddProductFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // 1) Subir imagen (si hay)
-                var imageList: List<Map<String, String>> = emptyList()
+                // 1) Subir imagen si hay  ⬅️  CAMBIAR: usar UploadResponse en lugar de ImageInput
+                var images: List<UploadResponse> = emptyList()
                 selectedImageUri?.let { uri ->
-                    val part = uriToMultipart(requireContext().contentResolver, uri)
-                    val uploadApi = ApiClient.upload(requireContext()).create(UploadService::class.java)
-                    val up = withContext(Dispatchers.IO) { uploadApi.upload(part) }
-
-                    // usar path devuelto por Xano Upload
-                    imageList = listOf(mapOf("path" to up.path))
+                    val (part, _) = uriToContentPart(requireContext().contentResolver, uri)
+                    val upApi = ApiClient.upload(requireContext()).create(UploadService::class.java)
+                    val up = withContext(Dispatchers.IO) { upApi.upload(part) }
+                    // Enviar el OBJETO COMPLETO que devuelve /upload
+                    images = listOf(up)
                 }
 
-                // 2) Crear producto con image = [{ path }]
+                // 2) Crear producto (no cambia, solo que 'image' ahora es List<UploadResponse>)
                 val shopApi = ApiClient.shop(requireContext()).create(ProductService::class.java)
                 val body = CreateProductBody(
                     name = name,
@@ -103,24 +105,19 @@ class AddProductFragment : Fragment() {
                     stock = stock,
                     brand = brand,
                     category = category,
-                    image = imageList
+                    image = images
                 )
                 withContext(Dispatchers.IO) { shopApi.addProduct(body) }
 
-                // 3) limpiar UI
-                etName.setText("")
-                etDescription.setText("")
-                etPrice.setText("")
-                etStock.setText("")
-                etBrand.setText("")
-                etCategory.setText("")
-                ivPreview.setImageDrawable(null)
-                selectedImageUri = null
+                // 3) limpiar UI (igual)
+                etName.setText(""); etDescription.setText("")
+                etPrice.setText(""); etStock.setText("")
+                etBrand.setText(""); etCategory.setText("")
+                ivPreview.setImageDrawable(null); selectedImageUri = null
                 Toast.makeText(requireContext(), "Producto creado", Toast.LENGTH_SHORT).show()
 
             } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), extractHttpError(e), Toast.LENGTH_LONG).show()
             } finally {
                 progress.visibility = View.GONE
                 btnSave.isEnabled = true

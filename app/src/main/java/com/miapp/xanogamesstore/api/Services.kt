@@ -3,6 +3,13 @@ package com.miapp.xanogamesstore.api
 import com.miapp.xanogamesstore.model.Product
 import retrofit2.http.*
 
+data class ImageInput(
+    val path: String,
+    val name: String? = null
+)
+
+typealias ImagePayload = UploadResponse
+
 data class CreateProductBody(
     val name: String,
     val description: String,
@@ -10,8 +17,7 @@ data class CreateProductBody(
     val stock: Int,
     val brand: String,
     val category: String,
-    // Xano product.image es [image], así que enviamos una lista
-    val image: List<Map<String, String>> = emptyList()
+    val image: List<ImagePayload> = emptyList()
 )
 
 interface ProductService {

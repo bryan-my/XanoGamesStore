@@ -2,22 +2,37 @@ package com.miapp.xanogamesstore.api
 
 import android.content.ContentResolver
 import android.net.Uri
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import android.provider.OpenableColumns
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
-import java.io.FileOutputStream
+import okhttp3.RequestBody.Companion.toRequestBody
 
-fun uriToMultipart(
-    resolver: ContentResolver,
-    uri: Uri,
-    partName: String = "file",
-    fileName: String = "upload_${System.currentTimeMillis()}"
-): MultipartBody.Part {
-    val input = resolver.openInputStream(uri)!!
-    val tmp = File.createTempFile("xano_", fileName)
-    FileOutputStream(tmp).use { out -> input.copyTo(out) }
-    val media = resolver.getType(uri) ?: "application/octet-stream"
-    val body = tmp.asRequestBody(media.toMediaTypeOrNull())
-    return MultipartBody.Part.createFormData(partName, tmp.name, body)
+/**
+ * Convierte un Uri de imagen en el Part que tu endpoint necesita.
+ * Campo = "content" (como está configurado en Xano)
+ */
+fun uriToContentPart(resolver: ContentResolver, uri: Uri): Pair<MultipartBody.Part, String> {
+    val mime = resolver.getType(uri) ?: "image/*"
+
+    // obtener nombre de archivo
+    var filename = "image_${System.currentTimeMillis()}.jpg"
+    resolver.query(uri, null, null, null, null)?.use { c ->
+        val idx = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        if (idx >= 0 && c.moveToFirst()) {
+            c.getString(idx)?.let { filename = it }
+        }
+    }
+
+    val bytes = resolver.openInputStream(uri)?.use { it.readBytes() }
+        ?: error("No se pudo abrir la imagen")
+
+    val body = bytes.toRequestBody(mime.toMediaType())
+
+    // ¡OJO AQUÍ! => "content" es el nombre que espera Xano (/upload input)
+    val part = MultipartBody.Part.createFormData(
+        "content",   // <--- nombre exacto del input en Xano
+        filename,
+        body
+    )
+    return part to filename
 }
