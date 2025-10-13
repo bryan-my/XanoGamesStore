@@ -23,6 +23,8 @@
         <activity
             android:name=".ui.HomeActivity"
             android:exported="true"/>
+
+        <activity android:name=".ui.SignupActivity" />
     </application>
 
 

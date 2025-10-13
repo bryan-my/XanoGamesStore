@@ -24,26 +24,39 @@ class ProductsFragment : Fragment() {
 
     private lateinit var list: RecyclerView
     private lateinit var progress: ProgressBar
-    private lateinit var adapter: ProductAdapter
+
     private val items = mutableListOf<Product>()
+    private lateinit var adapter: ProductAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        s: Bundle?
+        savedInstanceState: Bundle?
     ): View {
         val v = inflater.inflate(R.layout.fragment_products, container, false)
+
+        val session = SessionPrefs(requireContext())
+        val isAdmin = session.userRole == "admin"   // “admin” o “user” desde tu backend
+
         list = v.findViewById(R.id.recycler)
         progress = v.findViewById(R.id.progress)
 
-        // Adapter con callback para "Agregar al carrito"
-        adapter = ProductAdapter(items) { product ->
-            CartManager.add(product, 1)
-            Toast.makeText(requireContext(), "Añadido: ${product.name}", Toast.LENGTH_SHORT).show()
+        adapter = ProductAdapter(
+            items = items,
+            showAddButton = !isAdmin,                 // si es admin, no mostramos “Agregar”
+        ) { product ->
+            try {
+                CartManager.add(product)             // usa tu CartManager existente
+                Toast.makeText(requireContext(), "Agregado al carrito", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "No se pudo agregar: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
 
         list.layoutManager = LinearLayoutManager(requireContext())
         list.adapter = adapter
+
         return v
     }
 
