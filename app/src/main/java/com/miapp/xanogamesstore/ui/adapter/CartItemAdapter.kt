@@ -34,8 +34,9 @@ class CartItemAdapter(
             tvQty.text = ci.quantity.toString()
             tvSubtotal.text = String.format("$ %.2f", ci.subtotal)
 
+            val url = com.miapp.xanogamesstore.api.ApiClient.fileUrl(ci.product.image?.firstOrNull()?.path)
             Glide.with(iv.context)
-                .load(ci.product.image)
+                .load(url)
                 .placeholder(R.drawable.ic_cart)
                 .into(iv)
 

@@ -6,15 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.api.ProductService
-import com.miapp.xanogamesstore.model.CartManager
 import com.miapp.xanogamesstore.model.Product
+import com.miapp.xanogamesstore.model.CartManager
 import com.miapp.xanogamesstore.ui.adapter.ProductAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,38 +26,61 @@ class ProductsFragment : Fragment() {
 
     private lateinit var list: RecyclerView
     private lateinit var progress: ProgressBar
+    private lateinit var search: SearchView
 
-    private val items = mutableListOf<Product>()
+    private val allItems = mutableListOf<Product>()
     private lateinit var adapter: ProductAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val v = inflater.inflate(R.layout.fragment_products, container, false)
 
         val session = SessionPrefs(requireContext())
-        val isAdmin = session.userRole == "admin"   // “admin” o “user” desde tu backend
+        val isAdmin = session.userRole == "admin"
 
         list = v.findViewById(R.id.recycler)
         progress = v.findViewById(R.id.progress)
+        search = v.findViewById(R.id.search)
 
         adapter = ProductAdapter(
-            items = items,
-            showAddButton = !isAdmin,                 // si es admin, no mostramos “Agregar”
-        ) { product ->
-            try {
-                CartManager.add(product)             // usa tu CartManager existente
-                Toast.makeText(requireContext(), "Agregado al carrito", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(requireContext(), "No se pudo agregar: ${e.message}", Toast.LENGTH_LONG).show()
+            items = mutableListOf(),
+            showAddButton = !isAdmin,
+            onAddToCart = { product ->
+                try {
+                    CartManager.add(product)
+                    Toast.makeText(requireContext(), "Agregado al carrito", Toast.LENGTH_SHORT).show()
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "No se pudo agregar: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            },
+            onEdit = { product ->
+                parentFragmentManager.commit {
+                    replace(R.id.homeContainer, AddProductFragment.edit(product.id))
+                    addToBackStack(null)
+                }
+            },
+            onDelete = { product ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        val api = ApiClient.shop(requireContext()).create(ProductService::class.java)
+                        withContext(Dispatchers.IO) { api.deleteProduct(product.id) }
+                        Toast.makeText(requireContext(), "Producto eliminado", Toast.LENGTH_SHORT).show()
+                        load() // recarga
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), e.message ?: "Error al eliminar", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
-        }
+        )
 
         list.layoutManager = LinearLayoutManager(requireContext())
         list.adapter = adapter
+
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean { applyFilter(query); return true }
+            override fun onQueryTextChange(newText: String?): Boolean { applyFilter(newText); return true }
+        })
 
         return v
     }
@@ -71,17 +96,30 @@ class ProductsFragment : Fragment() {
             try {
                 val api = ApiClient.shop(requireContext()).create(ProductService::class.java)
                 val data = withContext(Dispatchers.IO) { api.getProducts() }
-                adapter.replaceAll(data)
+                allItems.clear()
+                allItems.addAll(data)
+                adapter.replaceAll(allItems)
+                applyFilter(search.query?.toString())
             } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(
-                    requireContext(),
-                    e.message ?: "Error cargando productos",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(requireContext(), e.message ?: "Error cargando productos", Toast.LENGTH_LONG).show()
             } finally {
                 progress.visibility = View.GONE
             }
         }
+    }
+
+    private fun applyFilter(q: String?) {
+        val query = (q ?: "").trim().lowercase()
+        if (query.isEmpty()) {
+            adapter.replaceAll(allItems)
+            return
+        }
+        val filtered = allItems.filter { p ->
+            p.name.lowercase().contains(query) ||
+                    p.category.lowercase().contains(query) ||
+                    p.description.lowercase().contains(query) ||
+                    p.brand.lowercase().contains(query)
+        }
+        adapter.replaceAll(filtered)
     }
 }

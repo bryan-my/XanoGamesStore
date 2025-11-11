@@ -3,15 +3,11 @@ package com.miapp.xanogamesstore.api
 import com.miapp.xanogamesstore.model.Product
 import retrofit2.http.*
 
-data class ImageInput(
-    val path: String,
-    val name: String? = null
-)
-
+// ⚠️ VOLVEMOS a usar el objeto de /upload COMPLETO como payload de imagen:
 typealias ImagePayload = UploadResponse
 
 data class CreateProductBody(
-    val name: String,
+    val name: String,                 // ← no uses title
     val description: String,
     val price: Double,
     val stock: Int,
@@ -24,9 +20,16 @@ interface ProductService {
     @GET("product")
     suspend fun getProducts(): List<Product>
 
+    @GET("product/{id}")
+    suspend fun getProduct(@Path("id") id: Int): Product
+
     @POST("product")
     suspend fun addProduct(@Body body: CreateProductBody): Product
+
+    @PATCH("product/{id}")
+    suspend fun updateProduct(@Path("id") id: Int, @Body body: CreateProductBody): Product
 
     @DELETE("product/{id}")
     suspend fun deleteProduct(@Path("id") id: Int)
 }
+

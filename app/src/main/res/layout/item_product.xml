@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:padding="12dp"
-    android:layout_width="match_parent" android:layout_height="wrap_content">
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/iv"
@@ -12,10 +14,25 @@
         android:contentDescription="@string/product_image"/>
 
     <LinearLayout
-        android:orientation="vertical" android:layout_marginStart="12dp"
-        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1">
 
+        <TextView
+            android:id="@+id/tvName"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- Botón para clientes -->
         <Button
             android:id="@+id/btnAddToCart"
             android:layout_width="wrap_content"
@@ -23,11 +40,26 @@
             android:text="Agregar"
             android:layout_marginTop="8dp"/>
 
-        <TextView android:id="@+id/tvName"
-            android:textStyle="bold" android:textSize="16sp"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <!-- Acciones para admin -->
+        <LinearLayout
+            android:id="@+id/adminActions"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
 
-        <TextView android:id="@+id/tvPrice"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/btnEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Editar"/>
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Eliminar"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
