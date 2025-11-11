@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:padding="8dp"
     android:gravity="center_vertical"
     android:layout_width="match_parent"
@@ -9,7 +12,10 @@
         android:id="@+id/ivThumb"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/ic_cart"/>
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/img_preview_desc"
+        tools:src="@drawable/ic_cart" />
 
     <LinearLayout
         android:orientation="vertical"
@@ -23,46 +29,58 @@
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:text="Producto" />
 
         <TextView
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="$ 0.00"/>
+            tools:text="$ 0.00" />
 
         <TextView
             android:id="@+id/tvSubtotal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Subtotal: $ 0.00"/>
+            tools:text="Subtotal: $ 0.00" />
     </LinearLayout>
 
+    <!-- Restar -->
     <ImageButton
         android:id="@+id/btnMinus"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@android:drawable/ic_media_previous"
-        android:contentDescription="-"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_remove_24"
+        app:tint="?attr/colorPrimary"
+        android:contentDescription="@string/action_clear" />
 
     <TextView
         android:id="@+id/tvQty"
-        android:paddingHorizontal="8dp"
-        android:text="1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:paddingHorizontal="8dp"
+        tools:text="1" />
 
+    <!-- Sumar -->
     <ImageButton
         android:id="@+id/btnPlus"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@android:drawable/ic_media_next"
-        android:contentDescription="+"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_add_24"
+        app:tint="?attr/colorPrimary"
+        android:contentDescription="@string/action_add" />
 
+    <!-- Quitar del carrito -->
     <ImageButton
         android:id="@+id/btnRemove"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@android:drawable/ic_menu_delete"
-        android:contentDescription="Remove"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:srcCompat="@drawable/ic_delete_24"
+        app:tint="?attr/colorPrimary"
+        android:contentDescription="@string/action_clear" />
 </LinearLayout>
+

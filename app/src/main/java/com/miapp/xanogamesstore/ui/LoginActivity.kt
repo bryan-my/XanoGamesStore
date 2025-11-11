@@ -23,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
-    private lateinit var progress: ProgressBar
+
     private lateinit var session: SessionPrefs
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
-        progress = findViewById(R.id.progress)
+
         tvCreate = findViewById(R.id.tvCreateAccount)
         tvCreate.setOnClickListener {
             startActivity(Intent(this, SignupActivity::class.java))
@@ -53,7 +53,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnLogin.isEnabled = false
-        progress.visibility = View.VISIBLE
+
 
         lifecycleScope.launch {
             try {
@@ -73,7 +73,7 @@ class LoginActivity : AppCompatActivity() {
                 e.printStackTrace()
                 Toast.makeText(this@LoginActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {
-                progress.visibility = View.GONE
+
                 btnLogin.isEnabled = true
             }
         }

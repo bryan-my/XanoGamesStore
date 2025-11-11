@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import com.miapp.xanogamesstore.core.Roles
 
 class HomeActivity : AppCompatActivity() {
 
@@ -56,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
         Log.d("HomeActivity", "setupBottom with role='$role'")
         bottom.menu.clear()
 
-        if (role.equals("admin", ignoreCase = true)) {
+        if (role.equals(Roles.ADMIN, ignoreCase = true)) {
             bottom.inflateMenu(R.menu.bottom_admin)
             Log.d("HomeActivity", "Inflated: bottom_admin")
         } else {

@@ -7,4 +7,34 @@
     <string name="title_products">Productos</string>
     <string name="title_add">Agregar</string>
     <string name="title_cart">Carrito</string>
+
+    <!-- Acciones -->
+    <string name="action_add">Agregar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_save_changes">Guardar cambios</string>
+    <string name="action_pick_image">Elegir imagen</string>
+    <string name="action_clear">Vaciar</string>
+    <string name="action_pay">Pagar y solicitar envío</string>
+    <string name="action_login">Iniciar sesión</string>
+    <string name="action_signup">Crear cuenta</string>
+
+    <!-- Placeholders / hints -->
+    <string name="hint_name">Nombre</string>
+    <string name="hint_description">Descripción</string>
+    <string name="hint_price">Precio</string>
+    <string name="hint_stock">Stock</string>
+    <string name="hint_brand">Marca</string>
+    <string name="hint_category">Categoría</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_name_optional">Nombre (opcional)</string>
+
+    <!-- Mensajes -->
+    <string name="cart_empty">El carrito está vacío</string>
+    <string name="img_preview_desc">Vista previa de imagen seleccionada</string>
+
+
+    <!-- NUEVO -->
+    <string name="label_total">Total:</string>
+
 </resources>

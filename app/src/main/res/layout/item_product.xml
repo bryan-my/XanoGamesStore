@@ -33,12 +33,12 @@
             android:layout_height="wrap_content"/>
 
         <!-- Botón para clientes -->
+        <!-- Dentro de tu layout de item, deja lo demás igual y cambia el botón: -->
         <Button
             android:id="@+id/btnAddToCart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Agregar"
-            android:layout_marginTop="8dp"/>
+            android:text="@string/action_add" />
 
         <!-- Acciones para admin -->
         <LinearLayout
