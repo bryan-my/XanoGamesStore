@@ -15,4 +15,8 @@ class SessionPrefs(context: Context) {
     var userRole: String?
         get() = prefs.getString("user_role", null)
         set(value) { prefs.edit().putString("user_role", value).apply() }
+
+    var userId: String?
+        get() = prefs.getString("user_id", null)
+        set(value) { prefs.edit().putString("user_id", value).apply() }
 }

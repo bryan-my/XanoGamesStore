@@ -3,6 +3,11 @@ package com.miapp.xanogamesstore.api
 import com.miapp.xanogamesstore.model.Product
 import retrofit2.http.*
 
+import com.miapp.xanogamesstore.model.CartDto
+import com.miapp.xanogamesstore.model.CreateCartBody
+import com.miapp.xanogamesstore.model.UpdateProductStockBody
+import retrofit2.http.*
+
 // ⚠️ VOLVEMOS a usar el objeto de /upload COMPLETO como payload de imagen:
 typealias ImagePayload = UploadResponse
 
@@ -33,3 +38,16 @@ interface ProductService {
     suspend fun deleteProduct(@Path("id") id: Int)
 }
 
+interface CartService {
+
+    @POST("cart")
+    suspend fun createCart(
+        @Body body: CreateCartBody
+    ): CartDto
+
+    @PATCH("product/{product_id}")
+    suspend fun updateProductStock(
+        @Path("product_id") productId: Int,
+        @Body body: UpdateProductStockBody
+    ): Product
+}

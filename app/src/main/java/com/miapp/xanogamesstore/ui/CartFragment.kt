@@ -8,12 +8,22 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.miapp.xanogamesstore.R
+import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.model.CartManager
+import com.miapp.xanogamesstore.model.CreateCartBody
 import com.miapp.xanogamesstore.ui.adapter.CartItemAdapter
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import com.miapp.xanogamesstore.api.CartService
+import com.miapp.xanogamesstore.api.extractHttpError
+import com.miapp.xanogamesstore.model.UpdateProductStockBody
+
 
 class CartFragment : Fragment() {
 
@@ -67,14 +77,14 @@ class CartFragment : Fragment() {
         }
 
         btnCheckout.setOnClickListener {
-            val total = CartManager.total()
-            if (total <= 0.0) {
-                Toast.makeText(requireContext(), "No hay productos para pagar", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            Toast.makeText(requireContext(), "Pagado con éxito", Toast.LENGTH_LONG).show()
+            pagarCarrito()
+        }
+
+        btnClear.setOnClickListener {
             CartManager.clear()
-            refresh()
+            adapter.replaceAll(emptyList())
+            updateTotal()
+            updateEmptyState()
         }
 
         refresh()
@@ -104,5 +114,78 @@ class CartFragment : Fragment() {
         rvCart.visibility = if (empty) View.GONE else View.VISIBLE
         btnCheckout.isEnabled = !empty
         btnClear.isEnabled = !empty
+    }
+
+
+    private fun pagarCarrito() {
+        val ctx = requireContext()
+        val session = SessionPrefs(ctx)
+
+        // ⚠️ por ahora, si aún no guardas el userId en SessionPrefs,
+        // puedes usar uno que sepas que existe (por ejemplo 12, que
+        // es el que usaste en el Run de Xano). Solo para probar.
+        // Luego lo cambiamos por session.userId.
+        val userId = 12
+
+        val items = CartManager.items()
+        if (items.isEmpty()) {
+            Toast.makeText(ctx, "El carrito está vacío", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // TOTAL NUMÉRICO, NO STRING
+        val totalDouble = CartManager.total()        // Double
+        val totalInt = totalDouble.toInt()           // lo convertimos a Int
+
+        // LISTA DE IDs DE PRODUCTO
+        val productIds = items.map { it.product.id }
+
+        val body = CreateCartBody(
+            user_id = userId,
+            total = totalInt,
+            product_id = productIds
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val api = ApiClient.shop(ctx).create(CartService::class.java)
+
+            try {
+                // 1) Crear carrito en Xano
+                val cart = withContext(Dispatchers.IO) {
+                    api.createCart(body)
+                }
+
+                // 2) Bajar stock de cada producto
+                withContext(Dispatchers.IO) {
+                    items.forEach { ci ->
+                        val p = ci.product
+                        val nuevoStock = p.stock - ci.quantity
+                        if (nuevoStock >= 0) {
+                            api.updateProductStock(
+                                productId = p.id,
+                                body = UpdateProductStockBody(stock = nuevoStock)
+                            )
+                        }
+                    }
+                }
+
+                // 3) Limpiar carrito local y UI
+                CartManager.clear()
+                adapter.replaceAll(emptyList())
+                updateTotal()
+                updateEmptyState()
+
+                Toast.makeText(
+                    ctx,
+                    "Carrito ${cart.id} creado y stock actualizado",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val msg = extractHttpError(e)
+                Toast.makeText(ctx, "Error al pagar carrito: $msg", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
