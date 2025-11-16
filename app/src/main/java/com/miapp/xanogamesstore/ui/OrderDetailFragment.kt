@@ -24,12 +24,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.text.NumberFormat
 
 class OrderDetailFragment : Fragment() {
 
     private var orderId: Int = 0
     private lateinit var rvDetail: RecyclerView
     private lateinit var tvTitle: TextView
+    private lateinit var tvTotal: TextView
     private val adapter by lazy { OrderDetailAdapter(mutableListOf()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,9 @@ class OrderDetailFragment : Fragment() {
         rvDetail = view.findViewById(R.id.rvOrderDetail)
         tvTitle = view.findViewById(R.id.tvOrderDetailTitle)
 
+        tvTotal = view.findViewById(R.id.tvOrderTotal)
+        tvTitle.text = getString(R.string.title_order_detail, orderId)
+
         rvDetail.layoutManager = LinearLayoutManager(requireContext())
         rvDetail.adapter = adapter
 
@@ -61,6 +66,9 @@ class OrderDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val cartService = ApiClient.shop(ctx).create(CartService::class.java)
             val productService = ApiClient.shop(ctx).create(ProductService::class.java)
+            val cart: CartDto = withContext(Dispatchers.IO) { cartService.getCart(orderId) }
+            val formatted = NumberFormat.getCurrencyInstance().format(cart.total.toDouble())
+            tvTotal.text = getString(R.string.label_order_total, formatted)
             try {
                 val cart: CartDto = withContext(Dispatchers.IO) { cartService.getCart(orderId) }
                 val productIds: List<Int> = when (val ids = cart.product_id) {

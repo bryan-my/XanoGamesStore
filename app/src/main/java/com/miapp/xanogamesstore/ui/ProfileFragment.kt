@@ -26,6 +26,9 @@ class ProfileFragment : Fragment() {
     private lateinit var session: SessionPrefs
     private lateinit var tvEmail: TextView
     private lateinit var progress: ProgressBar
+    // ProfileFragment.kt
+    private lateinit var btnEdit: Button
+    private lateinit var tvRole: TextView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, s: Bundle?): View {
         val v = inflater.inflate(R.layout.fragment_profile, container, false)
@@ -34,6 +37,9 @@ class ProfileFragment : Fragment() {
         progress = v.findViewById(R.id.progress)
         btnLogout = v.findViewById(R.id.btnLogout)
         session = SessionPrefs(requireContext())
+        tvRole = v.findViewById(R.id.tvRole)
+        btnEdit = v.findViewById(R.id.btnEditProfile)
+        btnEdit.setOnClickListener { openEditProfile() }
 
         btnLogout.setOnClickListener { logout() }
         return v
@@ -52,6 +58,7 @@ class ProfileFragment : Fragment() {
                 val me = withContext(Dispatchers.IO) { api.me() }
                 tvName.text = me.name ?: "(Sin nombre)"
                 tvEmail.text = me.email
+                tvRole.text = me.role ?: ""
             } catch (e: Exception) {
                 if (e is HttpException && e.code() == 401) {
                     Toast.makeText(requireContext(), "Sesión expirada. Inicia sesión de nuevo.", Toast.LENGTH_LONG).show()
@@ -63,6 +70,13 @@ class ProfileFragment : Fragment() {
                 progress.visibility = View.GONE
             }
         }
+    }
+    private fun openEditProfile() {
+        val frag = EditProfileFragment()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.homeContainer, frag)
+            .addToBackStack(null)
+            .commit()
     }
     private fun logout() {
         // borra credenciales

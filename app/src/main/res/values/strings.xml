@@ -20,6 +20,7 @@
     <string name="action_pay">Pagar y solicitar envío</string>
     <string name="action_login">Iniciar sesión</string>
     <string name="action_signup">Crear cuenta</string>
+    <string name="label_order_total">Total: %1$s</string>
 
     <!-- Placeholders / hints -->
     <string name="hint_name">Nombre</string>

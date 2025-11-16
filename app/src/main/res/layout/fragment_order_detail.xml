@@ -13,6 +13,16 @@
         android:textStyle="bold"
         android:text="Detalle del pedido"/>
 
+    <TextView
+        android:id="@+id/tvOrderTotal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvOrderDetail"
         android:layout_width="match_parent"
