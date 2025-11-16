@@ -63,5 +63,11 @@ interface CartService {
 
     @GET("cart/{id}")
     suspend fun getCart(@Path("id") id: Int): CartDto
+
+    @PATCH("cart/{id}")
+    suspend fun updateCart(
+        @Path("id") id: Int,
+        @Body body: com.miapp.xanogamesstore.model.UpdateCartBody
+    ): CartDto
 }
 

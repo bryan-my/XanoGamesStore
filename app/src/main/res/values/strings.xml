@@ -36,7 +36,11 @@
     <!-- Mensajes -->
     <string name="cart_empty">El carrito está vacío</string>
     <string name="img_preview_desc">Vista previa de imagen seleccionada</string>
-
+    <!-- Admin: pestañas de pedidos -->
+    <string name="title_orders_admin">Pedidos</string>
+    <string name="orders_pending">Pendientes</string>
+    <string name="orders_approved">Aprobados</string>
+    <string name="action_approve">Aprobar</string>
 
     <!-- NUEVO -->
     <string name="label_total">Total:</string>

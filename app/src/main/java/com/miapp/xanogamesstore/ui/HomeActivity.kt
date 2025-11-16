@@ -76,9 +76,15 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_add      -> { show(AddProductFragment()); showTitle(getString(R.string.title_add)) }     // admin
                 R.id.nav_cart     -> { show(CartFragment());       showTitle(getString(R.string.title_cart)) }
                 R.id.nav_orders   -> {
-                    show(OrdersFragment())
-                    showTitle(getString(R.string.title_orders))
-                }// customer
+                    // Si el rol es admin, mostrar sus pedidos; de lo contrario, las órdenes del cliente
+                    if (role.equals(Roles.ADMIN, ignoreCase = true)) {
+                        show(AdminOrdersFragment())
+                        showTitle(getString(R.string.title_orders_admin))
+                    } else {
+                        show(OrdersFragment())
+                        showTitle(getString(R.string.title_orders))
+                    }
+                }
                 else -> return@setOnItemSelectedListener false
             }
             true
