@@ -10,6 +10,6 @@ data class CartDto(
     val id: Int,
     val user_id: Int,
     val total: Int,
-    val product_id: List<Int>,
+    val product_id: Any?,
     val approved: Boolean
 )

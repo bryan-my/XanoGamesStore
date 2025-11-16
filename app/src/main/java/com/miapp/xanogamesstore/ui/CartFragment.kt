@@ -121,11 +121,12 @@ class CartFragment : Fragment() {
         val ctx = requireContext()
         val session = SessionPrefs(ctx)
 
-        // ⚠️ por ahora, si aún no guardas el userId en SessionPrefs,
-        // puedes usar uno que sepas que existe (por ejemplo 12, que
-        // es el que usaste en el Run de Xano). Solo para probar.
-        // Luego lo cambiamos por session.userId.
-        val userId = 12
+        // Obtiene el userId guardado al iniciar sesión
+        val userId = session.userId?.toIntOrNull()
+        if (userId == null) {
+            Toast.makeText(ctx, "No se ha encontrado el usuario actual", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val items = CartManager.items()
         if (items.isEmpty()) {
@@ -133,11 +134,8 @@ class CartFragment : Fragment() {
             return
         }
 
-        // TOTAL NUMÉRICO, NO STRING
-        val totalDouble = CartManager.total()        // Double
-        val totalInt = totalDouble.toInt()           // lo convertimos a Int
-
-        // LISTA DE IDs DE PRODUCTO
+        val totalDouble = CartManager.total()
+        val totalInt = totalDouble.toInt()
         val productIds = items.map { it.product.id }
 
         val body = CreateCartBody(
@@ -145,6 +143,7 @@ class CartFragment : Fragment() {
             total = totalInt,
             product_id = productIds
         )
+
 
         viewLifecycleOwner.lifecycleScope.launch {
             val api = ApiClient.shop(ctx).create(CartService::class.java)

@@ -74,7 +74,11 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_profile  -> { show(ProfileFragment());    showTitle(getString(R.string.title_profile)) }
                 R.id.nav_products -> { show(ProductsFragment());   showTitle(getString(R.string.title_products)) }
                 R.id.nav_add      -> { show(AddProductFragment()); showTitle(getString(R.string.title_add)) }     // admin
-                R.id.nav_cart     -> { show(CartFragment());       showTitle(getString(R.string.title_cart)) }    // customer
+                R.id.nav_cart     -> { show(CartFragment());       showTitle(getString(R.string.title_cart)) }
+                R.id.nav_orders   -> {
+                    show(OrdersFragment())
+                    showTitle(getString(R.string.title_orders))
+                }// customer
                 else -> return@setOnItemSelectedListener false
             }
             true
@@ -85,4 +89,5 @@ class HomeActivity : AppCompatActivity() {
             Log.d("HomeActivity", "menuItem[$i]=${bottom.menu.getItem(i).title}")
         }
     }
+
 }

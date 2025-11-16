@@ -7,6 +7,8 @@
     <string name="title_products">Productos</string>
     <string name="title_add">Agregar</string>
     <string name="title_cart">Carrito</string>
+    <string name="title_orders">Mis pedidos</string>
+    <string name="orders_empty">Aún no tienes pedidos</string>
 
     <!-- Acciones -->
     <string name="action_add">Agregar</string>
