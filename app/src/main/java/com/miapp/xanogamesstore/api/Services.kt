@@ -60,5 +60,8 @@ interface CartService {
      */
     @GET("cart")
     suspend fun getCarts(@Query("user_id") userId: Int? = null): List<CartDto>
+
+    @GET("cart/{id}")
+    suspend fun getCart(@Path("id") id: Int): CartDto
 }
 

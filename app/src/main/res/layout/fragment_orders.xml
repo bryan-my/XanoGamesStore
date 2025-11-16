@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Texto cuando no hay pedidos -->
+    <!-- Mensaje cuando no hay pedidos -->
     <TextView
         android:id="@+id/tvOrdersEmpty"
         android:layout_width="wrap_content"
@@ -12,11 +12,19 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="24dp"
         android:text="@string/orders_empty"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
-    <!-- Lista de pedidos -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvOrders"
+    <!-- Contenedor con swipe-to-refresh y lista -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshOrders"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOrders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

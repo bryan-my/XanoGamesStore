@@ -95,3 +95,6 @@ android {
         implementation("androidx.recyclerview:recyclerview:1.3.2")
     }
 }
+dependencies {
+    implementation(libs.androidx.swiperefreshlayout)
+}

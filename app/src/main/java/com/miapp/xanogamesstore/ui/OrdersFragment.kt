@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import com.miapp.xanogamesstore.ui.OrderDetailFragment
 
 /**
  * Fragmento para mostrar la lista de pedidos realizados por el cliente.
@@ -29,7 +30,20 @@ class OrdersFragment : Fragment() {
 
     private lateinit var rvOrders: RecyclerView
     private lateinit var tvEmpty: TextView
-    private val adapter by lazy { OrdersAdapter(mutableListOf()) }
+
+    private lateinit var swipeRefresh: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    private val adapter by lazy {
+        OrdersAdapter(mutableListOf()) { cart ->
+            onOrderClicked(cart)
+        }
+    }
+    private fun onOrderClicked(cart: CartDto) {
+        val frag = OrderDetailFragment.newInstance(cart.id)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.homeContainer, frag)
+            .addToBackStack(null)
+            .commit()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,18 +51,20 @@ class OrdersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_orders, container, false)
-
         rvOrders = view.findViewById(R.id.rvOrders)
         tvEmpty = view.findViewById(R.id.tvOrdersEmpty)
-
+        swipeRefresh = view.findViewById(R.id.swipeRefreshOrders)
         rvOrders.layoutManager = LinearLayoutManager(requireContext())
         rvOrders.adapter = adapter
 
-        // Cargar pedidos una vez creada la vista
-        loadOrders()
+        // Configuramos swipe-to-refresh
+        swipeRefresh.setOnRefreshListener { loadOrders() }
 
+        loadOrders()
         return view
     }
+
+
 
     /**
      * Consulta los carritos del usuario actual y los muestra. Si no hay usuario,
@@ -62,25 +78,24 @@ class OrdersFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val api = ApiClient.shop(ctx).create(CartService::class.java)
             try {
-                // Pasamos el userId para filtrar en Xano; si no filtra, lo haremos después.
                 val carts: List<CartDto> = withContext(Dispatchers.IO) {
                     api.getCarts(userId)
                 }
-                // Filtra por seguridad los carritos que pertenecen al usuario
                 val orders = carts.filter { it.user_id == userId }
-
                 adapter.replaceAll(orders)
 
                 val empty = orders.isEmpty()
                 tvEmpty.visibility = if (empty) View.VISIBLE else View.GONE
                 rvOrders.visibility = if (empty) View.GONE else View.VISIBLE
+                swipeRefresh.isRefreshing = false
             } catch (e: Exception) {
-                e.printStackTrace()
                 val msg = extractHttpError(e)
                 val friendlyMsg =
-                    if (e is HttpException && e.code() == 429) "Demasiadas peticiones, intenta de nuevo más tarde"
+                    if (e is HttpException && e.code() == 429)
+                        "Demasiadas peticiones, intenta de nuevo más tarde"
                     else msg
                 Toast.makeText(ctx, "Error al cargar pedidos: $friendlyMsg", Toast.LENGTH_LONG).show()
+                swipeRefresh.isRefreshing = false
             }
         }
     }

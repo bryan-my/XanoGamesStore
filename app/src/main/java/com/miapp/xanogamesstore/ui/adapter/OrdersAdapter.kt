@@ -1,5 +1,7 @@
 package com.miapp.xanogamesstore.ui.adapter
 
+import android.graphics.Color
+import android.icu.text.NumberFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.model.CartDto
+import java.util.Locale
 
 /**
  * Adaptador para listar los pedidos (carritos) realizados por un usuario.
@@ -14,7 +17,8 @@ import com.miapp.xanogamesstore.model.CartDto
  * o pendiente.
  */
 class OrdersAdapter(
-    private val items: MutableList<CartDto>
+    private val items: MutableList<CartDto>,
+    private val onItemClick: (CartDto) -> Unit
 ) : RecyclerView.Adapter<OrdersAdapter.VH>() {
 
     inner class VH(v: View) : RecyclerView.ViewHolder(v) {
@@ -22,9 +26,16 @@ class OrdersAdapter(
         private val tvStatus: TextView = v.findViewById(R.id.tvOrderStatus)
 
         fun bind(order: CartDto) {
-            val info = "Pedido #${order.id} - $ ${order.total}"
-            tvInfo.text = info
-            tvStatus.text = if (order.approved) "Aprobado" else "Pendiente"
+            // Formatear el total con separador de miles
+            val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
+            val formattedTotal = currencyFormat.format(order.total.toDouble())
+            tvInfo.text = "Pedido #${order.id} - $formattedTotal"
+
+            // Mostrar estado y aplicar color
+            val isApproved = order.approved
+            tvStatus.text = if (isApproved) "Aprobado" else "Pendiente"
+            val color = if (isApproved) Color.parseColor("#4CAF50") else Color.parseColor("#F44336")
+            tvStatus.setTextColor(color)
         }
     }
 
@@ -33,7 +44,11 @@ class OrdersAdapter(
         return VH(v)
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) = holder.bind(items[position])
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        val item = items[position]
+        holder.bind(item)
+        holder.itemView.setOnClickListener { onItemClick(item) }
+    }
 
     override fun getItemCount(): Int = items.size
 
@@ -45,4 +60,5 @@ class OrdersAdapter(
         items.addAll(newItems)
         notifyDataSetChanged()
     }
+
 }
