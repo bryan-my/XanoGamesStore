@@ -49,7 +49,12 @@ class UserAdapter(
             tvEmail.text = user.email
             // Ajusta el texto del botón de bloqueo según campo disponible. Si no existe,
             // siempre mostrará "Bloquear". Puedes personalizarlo según tu modelo.
-            btnBlock.text = itemView.context.getString(R.string.action_block)
+            val isActive = user.active != false
+            btnBlock.text = if (isActive) {
+                itemView.context.getString(R.string.action_block)
+            } else {
+                itemView.context.getString(R.string.action_unblock)
+            }
 
             btnEdit.setOnClickListener { onEdit(user) }
             btnBlock.setOnClickListener { onBlockToggle(user) }

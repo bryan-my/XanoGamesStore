@@ -21,6 +21,7 @@ import com.miapp.xanogamesstore.model.UserDto
 import com.miapp.xanogamesstore.ui.adapter.UserAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
@@ -68,6 +69,9 @@ class UsersFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val api = ApiClient.shop(ctx).create(UserService::class.java)
             try {
+                // Esperamos un corto periodo antes de hacer la llamada para no
+                // saturar el backend (plan gratuito de Xano) y evitar el error 429.
+                delay(1500L)
                 val users = withContext(Dispatchers.IO) { api.getUsers() }
                 adapter.replaceAll(users)
             } catch (e: Exception) {
@@ -167,11 +171,25 @@ class UsersFragment : Fragment() {
     }
 
     private fun toggleBlock(user: UserDto) {
-        // Placeholder para bloquear/desbloquear usuarios. Requiere que la API
-        // tenga un campo dedicado, como "blocked" o "active", y un endpoint
-        // PATCH para actualizarlo. Aquí solo mostramos un mensaje.
         val ctx = requireContext()
-        Toast.makeText(ctx, "Funcionalidad de bloqueo no implementada", Toast.LENGTH_LONG).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val api = ApiClient.shop(ctx).create(UserService::class.java)
+            try {
+                val currentStatus = user.active != false
+                val newStatus = !currentStatus
+                // Actualizamos el campo 'active'. Mantenemos nombre y email para no perderlos.
+                withContext(Dispatchers.IO) {
+                    api.updateUser(user.id, UpdateUserBody(user.name, user.email, newStatus))
+                }
+                val message = if (newStatus) "Usuario activado" else "Usuario bloqueado"
+                Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
+                // Recargar lista tras la actualización. Se incluye un pequeño delay.
+                loadUsers()
+            } catch (e: Exception) {
+                val msg = e.message ?: "Error al cambiar estado"
+                Toast.makeText(ctx, msg, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun deleteUser(user: UserDto) {

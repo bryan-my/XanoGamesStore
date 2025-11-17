@@ -26,14 +26,16 @@ data class UserDto(
     val id: Int,
     val name: String?,
     val email: String,
-    val role: String?
+    val role: String?,
+    val active: Boolean? = null
 )
 
 data class UserMe(
     val id: Int,
     val email: String,
     val name: String?,
-    val role: String?
+    val role: String?,
+    val active: Boolean? = null
 )
 data class SignupBody(
     val email: String,

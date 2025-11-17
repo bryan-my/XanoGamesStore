@@ -3,6 +3,7 @@ package com.miapp.xanogamesstore.model
 
 data class UpdateUserBody(
     val name: String?,
-    val email: String
+    val email: String,
+    val active: Boolean? = null
 )
 
