@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import com.miapp.xanogamesstore.core.Roles
+import com.miapp.xanogamesstore.ui.UsersFragment
 
 class HomeActivity : AppCompatActivity() {
 
@@ -84,6 +85,11 @@ class HomeActivity : AppCompatActivity() {
                         show(OrdersFragment())
                         showTitle(getString(R.string.title_orders))
                     }
+                }
+                R.id.nav_users    -> {
+                    // Solo los administradores tienen esta opción; mostramos el listado de usuarios
+                    show(UsersFragment())
+                    showTitle(getString(R.string.title_users))
                 }
                 else -> return@setOnItemSelectedListener false
             }

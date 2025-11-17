@@ -45,14 +45,34 @@ class AddProductFragment : Fragment() {
     private lateinit var ivPreview: ImageView
     private lateinit var progress: ProgressBar
 
-    private var selectedImageUri: Uri? = null
+    /**
+     * Lista de URIs de imágenes seleccionadas. Se usa cuando el usuario elige
+     * múltiples imágenes a la vez. Siempre se vacía antes de añadir nuevas
+     * selecciones para evitar conservar imágenes de selecciones previas.
+     */
+    private var selectedUris: MutableList<Uri> = mutableListOf()
 
+    /**
+     * Lanzador del selector de imágenes. Utiliza la variante
+     * {@link ActivityResultContracts.PickMultipleVisualMedia} para permitir
+     * seleccionar más de una imagen a la vez. Se limita a un máximo de 5
+     * elementos, pero puedes ajustar este número según tus necesidades. En el
+     * callback se actualiza la lista de URIs y se muestra la primera imagen
+     * seleccionada como vista previa.
+     */
     private val picker = registerForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let {
-            selectedImageUri = it
-            ivPreview.setImageURI(it)
+        ActivityResultContracts.PickMultipleVisualMedia(5)
+    ) { uris ->
+        // Limpiamos cualquier selección previa
+        selectedUris.clear()
+        // Añadimos las nuevas URIs
+        selectedUris.addAll(uris ?: emptyList())
+        // Si hay al menos una imagen, mostramos la primera como preview
+        if (selectedUris.isNotEmpty()) {
+            ivPreview.setImageURI(selectedUris.first())
+        } else {
+            // Si no se seleccionó nada, limpiamos la vista previa
+            ivPreview.setImageDrawable(null)
         }
     }
 
@@ -74,6 +94,10 @@ class AddProductFragment : Fragment() {
 
         // 2) Listeners (una sola vez)
         btnPick.setOnClickListener {
+            // Lanzamos el selector de múltiples imágenes. Especificamos que
+            // únicamente se permitan seleccionar imágenes (no vídeos ni otros
+            // tipos de contenido) mediante el parámetro ImageOnly. El valor
+            // máximo de imágenes lo definimos en el registro del ActivityResult.
             picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
         btnSave.setOnClickListener { saveProduct() }
@@ -152,15 +176,20 @@ class AddProductFragment : Fragment() {
                 val uploadApi = ApiClient.upload(requireContext()).create(UploadService::class.java)
                 val shopApi = ApiClient.shop(requireContext()).create(ProductService::class.java)
 
-                // Si eliges nueva imagen -> subir; si no, usar existentes (cuando editas)
+                // Si eliges nuevas imágenes -> subirlas todas; si no, usar las existentes (cuando editas)
                 var images: List<ImagePayload> = existingImages
-                selectedImageUri?.let { uri ->
-                    val (part, _) = uriToContentPart(requireContext().contentResolver, uri)
-                    val up = withContext(Dispatchers.IO) { uploadApi.upload(part) }
-                    images = listOf(up)    // ← ¡clave! enviar el objeto de upload completo
+                if (selectedUris.isNotEmpty()) {
+                    // Subimos cada imagen seleccionada y construimos la lista de UploadResponse
+                    val uploadResponses = mutableListOf<UploadResponse>()
+                    for (uri in selectedUris) {
+                        val (part, _) = uriToContentPart(requireContext().contentResolver, uri)
+                        val up = withContext(Dispatchers.IO) { uploadApi.upload(part) }
+                        uploadResponses.add(up)
+                    }
+                    images = uploadResponses
                 }
 
-                // Body compatible con el Input de Xano (evita "Missing param: t..." por title)
+                // Cuerpo compatible con el Input de Xano (evita "Missing param: t..." por title)
                 val body = CreateProductBody(
                     name = name,
                     description = description,
@@ -203,7 +232,8 @@ class AddProductFragment : Fragment() {
 
         // Limpiar imagen
         ivPreview.setImageDrawable(null)
-        selectedImageUri = null
+        // Restablecemos la selección de imágenes para próximas creaciones
+        selectedUris.clear()
         existingImages = emptyList()
 
         // Modo crear

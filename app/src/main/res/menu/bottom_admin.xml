@@ -15,4 +15,10 @@
         android:id="@+id/nav_orders"
         android:title="@string/title_orders_admin"
         android:icon="@drawable/ic_list"/>
+
+    <!-- Opción adicional para la administración de usuarios -->
+    <item
+        android:id="@+id/nav_users"
+        android:title="@string/title_users"
+        android:icon="@drawable/ic_person"/>
 </menu>

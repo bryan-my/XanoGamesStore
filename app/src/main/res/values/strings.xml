@@ -45,4 +45,11 @@
     <!-- NUEVO -->
     <string name="label_total">Total:</string>
 
+    <!-- Administración de usuarios -->
+    <string name="title_users">Usuarios</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_block">Bloquear</string>
+    <string name="action_unblock">Desbloquear</string>
+
 </resources>
