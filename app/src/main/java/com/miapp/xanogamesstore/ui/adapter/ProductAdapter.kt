@@ -13,12 +13,10 @@ import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.model.Product
 
-/**
- * @param showAddButton si es true mostramos "Agregar" (cliente). Si es false, mostramos acciones de admin.
- */
 class ProductAdapter(
     private val items: MutableList<Product>,
     private val showAddButton: Boolean,
+    private val onItemClick: (Product) -> Unit, // Nuevo callback para el clic en el ítem
     private val onAddToCart: (Product) -> Unit,
     private val onEdit: ((Product) -> Unit)? = null,
     private val onDelete: ((Product) -> Unit)? = null
@@ -42,6 +40,9 @@ class ProductAdapter(
                 .load(url)
                 .placeholder(R.drawable.ic_image_placeholder)
                 .into(iv)
+
+            // Configurar el clic en el ítem completo
+            itemView.setOnClickListener { onItemClick(p) }
 
             // Cliente
             btnAdd.visibility = if (showAddButton) View.VISIBLE else View.GONE

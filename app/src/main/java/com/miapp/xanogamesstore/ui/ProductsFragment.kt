@@ -46,6 +46,12 @@ class ProductsFragment : Fragment() {
         adapter = ProductAdapter(
             items = mutableListOf(),
             showAddButton = !isAdmin,
+            onItemClick = { product ->
+                parentFragmentManager.commit {
+                    replace(R.id.homeContainer, ProductDetailFragment.newInstance(product.id))
+                    addToBackStack(null)
+                }
+            },
             onAddToCart = { product ->
                 try {
                     CartManager.add(product)
