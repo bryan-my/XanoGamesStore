@@ -13,7 +13,6 @@ import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.api.AuthService
 import com.miapp.xanogamesstore.model.SignupBody
-import com.miapp.xanogamesstore.ui.SessionPrefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -57,18 +56,30 @@ class SignupActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val api = ApiClient.auth(this@SignupActivity).create(AuthService::class.java)
+                
+                // 1. Registro y obtención del token
                 val resp = withContext(Dispatchers.IO) {
                     api.signup(SignupBody(email, pass, name))
                 }
-                // guarda token y navega como en login
                 session.authToken = resp.authToken
 
-                // opcional: cargar /auth/me para rol y redirigir
-                startActivity(Intent(this@SignupActivity, HomeActivity::class.java))
+                // 2. OBLIGATORIO: Cargar los datos del usuario recién creado para tener su ID
+                val userDto = withContext(Dispatchers.IO) {
+                    api.me()
+                }
+                session.userId = userDto.id.toString()
+                // session.userRole = userDto.role 
+
+                // Navegar al Home
+                startActivity(Intent(this@SignupActivity, HomeActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@SignupActivity, e.message ?: "Error al crear cuenta", Toast.LENGTH_LONG).show()
+                session.authToken = null
+                session.userId = null
             } finally {
                 progress.visibility = View.GONE
                 btnSignup.isEnabled = true

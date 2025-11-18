@@ -20,11 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import com.miapp.xanogamesstore.ui.OrderDetailFragment
 
 /**
  * Fragmento para mostrar la lista de pedidos realizados por el cliente.
- * Se obtiene la lista desde el backend (Xano) a través de CartService.
  */
 class OrdersFragment : Fragment() {
 
@@ -37,6 +35,7 @@ class OrdersFragment : Fragment() {
             onOrderClicked(cart)
         }
     }
+
     private fun onOrderClicked(cart: CartDto) {
         val frag = OrderDetailFragment.newInstance(cart.id)
         requireActivity().supportFragmentManager.beginTransaction()
@@ -57,23 +56,29 @@ class OrdersFragment : Fragment() {
         rvOrders.layoutManager = LinearLayoutManager(requireContext())
         rvOrders.adapter = adapter
 
-        // Configuramos swipe-to-refresh
         swipeRefresh.setOnRefreshListener { loadOrders() }
 
         loadOrders()
         return view
     }
 
-
-
-    /**
-     * Consulta los carritos del usuario actual y los muestra. Si no hay usuario,
-     * deja la lista vacía. Si ocurre algún error, se muestra un Toast informativo.
-     */
     private fun loadOrders() {
         val ctx = requireContext()
         val session = SessionPrefs(ctx)
-        val userId = session.userId?.toIntOrNull() ?: return
+        
+        val userIdStr = session.userId
+        val userId = userIdStr?.toIntOrNull()
+
+        // Debug temporal: Ver qué ID tenemos
+        // Toast.makeText(ctx, "Mi UserID es: $userIdStr", Toast.LENGTH_SHORT).show()
+
+        if (userId == null || userId == 0) {
+            adapter.replaceAll(emptyList())
+            tvEmpty.visibility = View.VISIBLE
+            rvOrders.visibility = View.GONE
+            swipeRefresh.isRefreshing = false
+            return
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val api = ApiClient.shop(ctx).create(CartService::class.java)
@@ -81,20 +86,32 @@ class OrdersFragment : Fragment() {
                 val carts: List<CartDto> = withContext(Dispatchers.IO) {
                     api.getCarts(userId)
                 }
-                val orders = carts.filter { it.user_id == userId }
-                adapter.replaceAll(orders)
 
-                val empty = orders.isEmpty()
-                tvEmpty.visibility = if (empty) View.VISIBLE else View.GONE
-                rvOrders.visibility = if (empty) View.GONE else View.VISIBLE
-                swipeRefresh.isRefreshing = false
+                // Filtrado estricto
+                val myOrders = carts.filter { it.user_id == userId }
+                
+                // Debug: Si la lista no está vacía pero debería, ver qué IDs llegan
+                if (carts.isNotEmpty() && myOrders.isNotEmpty()) {
+                   // val firstOrder = myOrders.first()
+                   // Toast.makeText(ctx, "Pedido recibido ID: ${firstOrder.id}, UserID: ${firstOrder.user_id}", Toast.LENGTH_LONG).show()
+                }
+
+                adapter.replaceAll(myOrders)
+
+                val isEmpty = myOrders.isEmpty()
+                tvEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE
+                rvOrders.visibility = if (isEmpty) View.GONE else View.VISIBLE
+                
             } catch (e: Exception) {
                 val msg = extractHttpError(e)
-                val friendlyMsg =
-                    if (e is HttpException && e.code() == 429)
-                        "Demasiadas peticiones, intenta de nuevo más tarde"
+                val friendlyMsg = if (e is HttpException && e.code() == 429)
+                        "Demasiadas peticiones, intenta más tarde"
                     else msg
-                Toast.makeText(ctx, "Error al cargar pedidos: $friendlyMsg", Toast.LENGTH_LONG).show()
+                
+                if (isAdded) {
+                   Toast.makeText(ctx, "Error: $friendlyMsg", Toast.LENGTH_LONG).show()
+                }
+            } finally {
                 swipeRefresh.isRefreshing = false
             }
         }

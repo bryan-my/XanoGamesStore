@@ -30,9 +30,18 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 1. Verificar si ya existe una sesión activa antes de cargar la vista
+        session = SessionPrefs(this)
+        if (!session.authToken.isNullOrEmpty()) {
+            // Si hay token, vamos directo al Home
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish() // Cerramos LoginActivity para que no se pueda volver atrás
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
-        session = SessionPrefs(this)
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
@@ -60,10 +69,21 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val api = ApiClient.auth(this@LoginActivity).create(AuthService::class.java)
+                
+                // 1. Login para obtener el token
                 val resp = withContext(Dispatchers.IO) {
                     api.login(LoginBody(email, password))
                 }
-                session.authToken = resp.authToken  // guarda token
+                
+                session.authToken = resp.authToken 
+
+                // 2. Obtener los datos del usuario (ID, Rol, etc.)
+                val userDto = withContext(Dispatchers.IO) {
+                    api.me()
+                }
+
+                // 3. Guardamos los datos críticos en la sesión
+                session.userId = userDto.id.toString()
 
                 startActivity(
                     Intent(this@LoginActivity, HomeActivity::class.java).apply {
@@ -74,6 +94,8 @@ class LoginActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@LoginActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                session.authToken = null
+                session.userId = null
             } finally {
                 progress.visibility = View.GONE
                 btnLogin.isEnabled = true
