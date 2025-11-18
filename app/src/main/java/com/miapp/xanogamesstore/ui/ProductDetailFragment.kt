@@ -10,9 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.api.ProductService
+import com.miapp.xanogamesstore.model.CartManager
 import com.miapp.xanogamesstore.model.Product
 import com.miapp.xanogamesstore.ui.adapter.ImageSliderAdapter
 import com.miapp.xanogamesstore.ui.adapter.ThumbnailAdapter
@@ -24,11 +27,13 @@ class ProductDetailFragment : Fragment() {
 
     private var productId: Int = -1
 
+    private lateinit var toolbar: MaterialToolbar
     private lateinit var viewPager: ViewPager2
     private lateinit var rvThumbnails: RecyclerView
     private lateinit var tvName: TextView
     private lateinit var tvPrice: TextView
     private lateinit var tvDescription: TextView
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,16 +46,26 @@ class ProductDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_product_detail, container, false)
+        toolbar = view.findViewById(R.id.toolbar)
         viewPager = view.findViewById(R.id.viewPagerImages)
         rvThumbnails = view.findViewById(R.id.rvThumbnails)
         tvName = view.findViewById(R.id.tvProductName)
         tvPrice = view.findViewById(R.id.tvProductPrice)
         tvDescription = view.findViewById(R.id.tvProductDescription)
+        fab = view.findViewById(R.id.fabAddToCart)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        toolbar.setNavigationOnClickListener { parentFragmentManager.popBackStack() }
+
+        val session = SessionPrefs(requireContext())
+        if (session.userRole == "admin") {
+            fab.visibility = View.GONE
+        }
+
         loadProductDetails()
     }
 
@@ -72,6 +87,7 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun displayProduct(product: Product) {
+        toolbar.title = product.name
         tvName.text = product.name
         tvPrice.text = "$ ${"%.2f".format(product.price)}"
         tvDescription.text = product.description
@@ -80,6 +96,15 @@ class ProductDetailFragment : Fragment() {
             viewPager.adapter = ImageSliderAdapter(images)
             rvThumbnails.adapter = ThumbnailAdapter(images) { position ->
                 viewPager.setCurrentItem(position, true)
+            }
+        }
+
+        fab.setOnClickListener {
+            try {
+                CartManager.add(product)
+                Toast.makeText(requireContext(), "Agregado al carrito", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "No se pudo agregar: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

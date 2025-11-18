@@ -1,65 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:padding="12dp"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/iv"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_image_placeholder"
-        android:contentDescription="@string/product_image"/>
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginStart="12dp"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
-        <TextView
-            android:id="@+id/tvName"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/iv"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_image_placeholder"
+            android:contentDescription="@string/product_image" />
 
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <!-- Botón para clientes -->
-        <!-- Dentro de tu layout de item, deja lo demás igual y cambia el botón: -->
-        <Button
-            android:id="@+id/btnAddToCart"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/action_add" />
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+            <!-- Botón para clientes -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAddToCart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/action_add" />
+
+        </LinearLayout>
 
         <!-- Acciones para admin -->
         <LinearLayout
             android:id="@+id/adminActions"
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Editar"/>
+                android:textSize="14sp"
+                android:text="Editar" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Eliminar"
-                android:layout_marginStart="8dp"/>
+                android:textSize="14sp"
+                android:text="Eliminar" />
         </LinearLayout>
+
     </LinearLayout>
-</LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

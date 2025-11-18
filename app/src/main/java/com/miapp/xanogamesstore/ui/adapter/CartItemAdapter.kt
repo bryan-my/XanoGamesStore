@@ -23,7 +23,6 @@ class CartItemAdapter(
         val tvName: TextView = v.findViewById(R.id.tvName)
         val tvPrice: TextView = v.findViewById(R.id.tvPrice)
         val tvQty: TextView = v.findViewById(R.id.tvQty)
-        val tvSubtotal: TextView = v.findViewById(R.id.tvSubtotal)
         val btnPlus: ImageButton = v.findViewById(R.id.btnPlus)
         val btnMinus: ImageButton = v.findViewById(R.id.btnMinus)
         val btnRemove: ImageButton = v.findViewById(R.id.btnRemove)
@@ -32,7 +31,6 @@ class CartItemAdapter(
             tvName.text = ci.product.name ?: "Producto"
             tvPrice.text = String.format("$ %.2f", (ci.product.price ?: 0.0))
             tvQty.text = ci.quantity.toString()
-            tvSubtotal.text = String.format("$ %.2f", ci.subtotal)
 
             val url = com.miapp.xanogamesstore.api.ApiClient.fileUrl(ci.product.image?.firstOrNull()?.path)
             Glide.with(iv.context)

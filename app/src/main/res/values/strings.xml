@@ -13,6 +13,8 @@
 
     <!-- Acciones -->
     <string name="action_add">Agregar</string>
+    <string name="action_add_to_cart">Añadir al carrito</string>
+    <string name="action_add_user">Añadir usuario</string>
     <string name="action_save">Guardar</string>
     <string name="action_save_changes">Guardar cambios</string>
     <string name="action_pick_image">Elegir imagen</string>
