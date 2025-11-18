@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
+import com.miapp.xanogamesstore.api.AuthService
 import com.miapp.xanogamesstore.api.UserService
 import com.miapp.xanogamesstore.model.SignupBody
 import com.miapp.xanogamesstore.model.UpdateUserBody
@@ -25,12 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
-/**
- * Fragmento de administración de usuarios. Permite listar todos los usuarios,
- * crear nuevos, editar existentes y eliminar registros. Solo está disponible
- * para usuarios con rol de administrador. Las acciones de bloqueo/desbloqueo
- * dependen de que el backend de Xano disponga de un campo apropiado.
- */
 class UsersFragment : Fragment() {
 
     private lateinit var recycler: RecyclerView
@@ -61,16 +56,11 @@ class UsersFragment : Fragment() {
         loadUsers()
     }
 
-    /**
-     * Obtiene el listado de usuarios desde el backend y actualiza el adaptador.
-     */
     private fun loadUsers() {
         val ctx = requireContext()
         viewLifecycleOwner.lifecycleScope.launch {
             val api = ApiClient.shop(ctx).create(UserService::class.java)
             try {
-                // Esperamos un corto periodo antes de hacer la llamada para no
-                // saturar el backend (plan gratuito de Xano) y evitar el error 429.
                 delay(1500L)
                 val users = withContext(Dispatchers.IO) { api.getUsers() }
                 adapter.replaceAll(users)
@@ -81,12 +71,6 @@ class UsersFragment : Fragment() {
         }
     }
 
-    /**
-     * Muestra un diálogo para ingresar los datos de un nuevo usuario y lo crea
-     * a través de la API. Se reutiliza la estructura de SignupBody para
-     * aprovechar el endpoint existente. En un entorno real, podrías incluir
-     * campos adicionales como rol o contraseña generada automáticamente.
-     */
     private fun showCreateUserDialog() {
         val ctx = requireContext()
         val inflater = LayoutInflater.from(ctx)
@@ -115,10 +99,10 @@ class UsersFragment : Fragment() {
     private fun createUser(email: String, password: String, name: String?) {
         val ctx = requireContext()
         viewLifecycleOwner.lifecycleScope.launch {
-            val api = ApiClient.shop(ctx).create(UserService::class.java)
+            val api = ApiClient.auth(ctx).create(AuthService::class.java)
             try {
                 withContext(Dispatchers.IO) {
-                    api.createUser(SignupBody(email, password, name))
+                    api.signup(SignupBody(email, password, name))
                 }
                 Toast.makeText(ctx, "Usuario creado", Toast.LENGTH_SHORT).show()
                 loadUsers()
@@ -177,13 +161,11 @@ class UsersFragment : Fragment() {
             try {
                 val currentStatus = user.active != false
                 val newStatus = !currentStatus
-                // Actualizamos el campo 'active'. Mantenemos nombre y email para no perderlos.
                 withContext(Dispatchers.IO) {
                     api.updateUser(user.id, UpdateUserBody(user.name, user.email, newStatus))
                 }
                 val message = if (newStatus) "Usuario activado" else "Usuario bloqueado"
                 Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
-                // Recargar lista tras la actualización. Se incluye un pequeño delay.
                 loadUsers()
             } catch (e: Exception) {
                 val msg = e.message ?: "Error al cambiar estado"
