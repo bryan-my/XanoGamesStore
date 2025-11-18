@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.api.ApiClient
 import com.miapp.xanogamesstore.api.ProductService
-import com.miapp.xanogamesstore.model.Product
 import com.miapp.xanogamesstore.model.CartManager
+import com.miapp.xanogamesstore.model.Product
 import com.miapp.xanogamesstore.ui.adapter.ProductAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 class ProductsFragment : Fragment() {
 
     private lateinit var list: RecyclerView
-    private lateinit var progress: ProgressBar
+    private lateinit var shimmerContainer: ShimmerFrameLayout
     private lateinit var search: SearchView
 
     private val allItems = mutableListOf<Product>()
@@ -40,7 +40,7 @@ class ProductsFragment : Fragment() {
         val isAdmin = session.userRole == "admin"
 
         list = v.findViewById(R.id.recycler)
-        progress = v.findViewById(R.id.progress)
+        shimmerContainer = v.findViewById(R.id.shimmer_view_container)
         search = v.findViewById(R.id.search)
 
         adapter = ProductAdapter(
@@ -80,7 +80,7 @@ class ProductsFragment : Fragment() {
             }
         )
 
-        list.layoutManager = LinearLayoutManager(requireContext())
+        list.layoutManager = GridLayoutManager(requireContext(), 2)
         list.adapter = adapter
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -97,7 +97,10 @@ class ProductsFragment : Fragment() {
     }
 
     private fun load() {
-        progress.visibility = View.VISIBLE
+        list.visibility = View.GONE
+        shimmerContainer.visibility = View.VISIBLE
+        shimmerContainer.startShimmer()
+
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val api = ApiClient.shop(requireContext()).create(ProductService::class.java)
@@ -109,7 +112,9 @@ class ProductsFragment : Fragment() {
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), e.message ?: "Error cargando productos", Toast.LENGTH_LONG).show()
             } finally {
-                progress.visibility = View.GONE
+                shimmerContainer.stopShimmer()
+                shimmerContainer.visibility = View.GONE
+                list.visibility = View.VISIBLE
             }
         }
     }
