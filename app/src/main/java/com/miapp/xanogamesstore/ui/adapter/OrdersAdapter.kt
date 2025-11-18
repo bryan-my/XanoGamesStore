@@ -1,41 +1,47 @@
 package com.miapp.xanogamesstore.ui.adapter
 
-import android.graphics.Color
 import android.icu.text.NumberFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.model.CartDto
 import java.util.Locale
 
-/**
- * Adaptador para listar los pedidos (carritos) realizados por un usuario.
- * Cada fila muestra el identificador del pedido, el total y si está aprobado
- * o pendiente.
- */
 class OrdersAdapter(
     private val items: MutableList<CartDto>,
     private val onItemClick: (CartDto) -> Unit
 ) : RecyclerView.Adapter<OrdersAdapter.VH>() {
 
     inner class VH(v: View) : RecyclerView.ViewHolder(v) {
-        private val tvInfo: TextView = v.findViewById(R.id.tvOrderInfo)
+        private val tvId: TextView = v.findViewById(R.id.tvOrderId)
+        private val tvDate: TextView = v.findViewById(R.id.tvOrderDate)
+        private val tvTotal: TextView = v.findViewById(R.id.tvOrderTotal)
         private val tvStatus: TextView = v.findViewById(R.id.tvOrderStatus)
 
         fun bind(order: CartDto) {
-            // Formatear el total con separador de miles
-            val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
-            val formattedTotal = currencyFormat.format(order.total.toDouble())
-            tvInfo.text = "Pedido #${order.id} - $formattedTotal"
+            // 1. Rellenar campos de texto
+            tvId.text = "Pedido #${order.id}"
 
-            // Mostrar estado y aplicar color
+            // Formatear el total como moneda
+            val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
+            tvTotal.text = currencyFormat.format(order.total.toDouble())
+
+            // 2. Ocultar la fecha ya que no la tenemos en el modelo CartDto
+            tvDate.visibility = View.GONE
+
+            // 3. Configurar el estado (texto y fondo)
             val isApproved = order.approved
             tvStatus.text = if (isApproved) "Aprobado" else "Pendiente"
-            val color = if (isApproved) Color.parseColor("#4CAF50") else Color.parseColor("#F44336")
-            tvStatus.setTextColor(color)
+
+            val backgroundRes = if (isApproved) R.drawable.bg_status_approved else R.drawable.bg_status_pending
+            tvStatus.background = ContextCompat.getDrawable(itemView.context, backgroundRes)
+
+            // 4. Configurar el click listener para toda la tarjeta
+            itemView.setOnClickListener { onItemClick(order) }
         }
     }
 
@@ -45,20 +51,14 @@ class OrdersAdapter(
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val item = items[position]
-        holder.bind(item)
-        holder.itemView.setOnClickListener { onItemClick(item) }
+        holder.bind(items[position])
     }
 
     override fun getItemCount(): Int = items.size
 
-    /**
-     * Reemplaza el contenido de la lista, ideal al refrescar los pedidos
-     */
     fun replaceAll(newItems: List<CartDto>) {
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
     }
-
 }

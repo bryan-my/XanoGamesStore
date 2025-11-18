@@ -5,12 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.miapp.xanogamesstore.R
 import com.miapp.xanogamesstore.model.CartDto
 import java.text.NumberFormat
 import java.util.Locale
-
 
 class AdminOrdersAdapter(
     private val items: MutableList<CartDto>,
@@ -19,25 +19,32 @@ class AdminOrdersAdapter(
 
     inner class VH(v: View) : RecyclerView.ViewHolder(v) {
         private val tvInfo: TextView = v.findViewById(R.id.tvOrderInfo)
+        private val tvTotal: TextView = v.findViewById(R.id.tvOrderTotal)
         private val tvUser: TextView = v.findViewById(R.id.tvOrderUser)
         private val tvStatus: TextView = v.findViewById(R.id.tvOrderStatus)
         private val btnApprove: Button = v.findViewById(R.id.btnOrderApprove)
 
         fun bind(order: CartDto) {
-            val nf = NumberFormat.getCurrencyInstance(Locale.getDefault())
-            val totalFormatted = nf.format(order.total.toDouble())
-            tvInfo.text = "Pedido #${order.id} - $totalFormatted"
+            // 1. Rellenar campos de texto
+            tvInfo.text = "Pedido #${order.id}"
             tvUser.text = "Usuario #${order.user_id}"
-            tvStatus.text = if (order.approved)
-                itemView.context.getString(R.string.orders_approved)
-            else
-                itemView.context.getString(R.string.orders_pending)
 
-            if (order.approved) {
-                btnApprove.text = itemView.context.getString(R.string.orders_approved)
+            val nf = NumberFormat.getCurrencyInstance(Locale.getDefault())
+            tvTotal.text = nf.format(order.total.toDouble())
+
+            // 2. Configurar el estado (texto y fondo)
+            val isApproved = order.approved
+            tvStatus.text = if (isApproved) "Aprobado" else "Pendiente"
+
+            val backgroundRes = if (isApproved) R.drawable.bg_status_approved else R.drawable.bg_status_pending
+            tvStatus.background = ContextCompat.getDrawable(itemView.context, backgroundRes)
+
+            // 3. Configurar el botón de aprobación
+            if (isApproved) {
+                btnApprove.text = "Aprobado"
                 btnApprove.isEnabled = false
             } else {
-                btnApprove.text = itemView.context.getString(R.string.action_approve)
+                btnApprove.text = "Aprobar"
                 btnApprove.isEnabled = true
                 btnApprove.setOnClickListener { onApprove(order) }
             }
