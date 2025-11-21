@@ -5,11 +5,11 @@
     <application
         android:allowBackup="true"
         android:label="Xano Games Store"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/app_logo"
+        android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Xano.NoActionBar">
-        <!-- PANTALLA INICIAL TEMPORAL: HomeActivity -->
+        <!-- PANTALLA INICIAL: LoginActivity -->
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true">
@@ -26,11 +26,6 @@
 
         <activity android:name=".ui.SignupActivity" />
     </application>
-
-
-
-
-
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
