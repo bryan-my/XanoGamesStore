@@ -60,6 +60,31 @@
                 android:textColor="?attr/colorPrimary"
                 tools:text="$99.99" />
 
+            <!-- NUEVO: Marca y Categoría -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvProductBrand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    tools:text="Marca: Sony" />
+
+                <TextView
+                    android:id="@+id/tvProductCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    tools:text="Categoría: Videojuegos" />
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/tvProductDescription"
                 android:layout_width="match_parent"

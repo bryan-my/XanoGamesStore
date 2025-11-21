@@ -33,6 +33,10 @@ class ProductDetailFragment : Fragment() {
     private lateinit var tvName: TextView
     private lateinit var tvPrice: TextView
     private lateinit var tvDescription: TextView
+    // Nuevos TextViews
+    private lateinit var tvBrand: TextView
+    private lateinit var tvCategory: TextView
+
     private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +56,11 @@ class ProductDetailFragment : Fragment() {
         tvName = view.findViewById(R.id.tvProductName)
         tvPrice = view.findViewById(R.id.tvProductPrice)
         tvDescription = view.findViewById(R.id.tvProductDescription)
+        
+        // Vinculamos los nuevos campos del layout
+        tvBrand = view.findViewById(R.id.tvProductBrand)
+        tvCategory = view.findViewById(R.id.tvProductCategory)
+
         fab = view.findViewById(R.id.fabAddToCart)
         return view
     }
@@ -91,6 +100,10 @@ class ProductDetailFragment : Fragment() {
         tvName.text = product.name
         tvPrice.text = "$ ${"%.2f".format(product.price)}"
         tvDescription.text = product.description
+        
+        // Asignamos directamente los valores de texto que vienen en el objeto Product
+        tvBrand.text = "Marca: ${product.brand}"
+        tvCategory.text = "Categoría: ${product.category}"
 
         product.image?.let { images ->
             viewPager.adapter = ImageSliderAdapter(images)
