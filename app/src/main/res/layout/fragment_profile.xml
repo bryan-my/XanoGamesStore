@@ -11,7 +11,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title="Mi Perfil" />
+        app:title="@string/title_my_profile" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -73,14 +73,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textSize="14sp"
-            android:text="Editar Perfil" />
+            android:text="@string/action_edit_profile" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Cerrar Sesión" />
+            android:text="@string/action_logout" />
 
     </LinearLayout>
 

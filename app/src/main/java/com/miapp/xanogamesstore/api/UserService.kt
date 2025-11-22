@@ -21,26 +21,13 @@ interface UserService {
         @Body body: UpdateUserBody
     ): UserDto
 
-    /**
-     * Devuelve la lista completa de usuarios. Este endpoint existe en Xano con
-     * permisos de administrador. En un entorno real, debe protegerse mediante
-     * autenticación y roles.
-     */
+
     @GET("user")
     suspend fun getUsers(): List<UserDto>
 
-    /**
-     * Crea un nuevo usuario. Este método requiere un cuerpo con los campos
-     * necesarios para la creación (generalmente email, password y opcionalmente
-     * nombre). Si necesitas establecer el rol, Xano puede permitir un
-     * parámetro adicional como parte del cuerpo.
-     */
+
     @POST("user")
     suspend fun createUser(@Body body: com.miapp.xanogamesstore.model.SignupBody): UserDto
-
-    /**
-     * Elimina un usuario específico por su ID. Usa con precaución.
-     */
     @DELETE("user/{id}")
     suspend fun deleteUser(@Path("id") id: Int)
 }

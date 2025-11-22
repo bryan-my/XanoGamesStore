@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:title="Agregar Producto" />
+            app:title="@string/title_add_product" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -88,35 +88,55 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
+            <!-- Selector de Marca -->
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:hint="@string/hint_brand">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etBrand"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/autoCompleteBrand"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Selector de Categoría -->
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:hint="@string/hint_category">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etCategory"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/autoCompleteCategory"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- BOTÓN DE REINTENTO DE CARGA -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRetryLists"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="Recargar listas"
+                android:visibility="gone"
+                android:textColor="@color/design_default_color_error"
+                app:icon="@drawable/ic_arrow_back"
+                app:iconTint="@color/design_default_color_error"/>
 
             <!-- Previsualización de imagen -->
             <TextView
-                style="@style/TextAppearance.Material3.LabelLarge"
+                style="@style/TextAppearance.MaterialComponents.Headline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Imagen del producto" />
+                android:text="@string/product_image"
+                android:textSize="18sp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
@@ -135,12 +155,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPick"
-                style="@style/Widget.Material3.Button.OutlinedButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:paddingVertical="12dp"
-                android:textSize="22sp"
+                android:layout_marginTop="14dp"
+                android:paddingVertical="16dp"
+                android:textSize="24sp"
                 android:text="@string/action_pick_image" />
 
             <View

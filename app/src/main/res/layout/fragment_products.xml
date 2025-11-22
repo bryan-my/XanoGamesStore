@@ -10,14 +10,14 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        app:title="Catálogo de Productos">
+        app:title="@string/title_catalog">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            app:queryHint="Buscar..." />
+            app:queryHint="@string/hint_search" />
 
     </com.google.android.material.appbar.MaterialToolbar>
 

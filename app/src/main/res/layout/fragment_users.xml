@@ -13,7 +13,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Gestión de Usuarios" />
+            app:title="@string/title_users_management" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
