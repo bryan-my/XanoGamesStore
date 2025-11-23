@@ -110,3 +110,8 @@ Puedes ajustar estos paths según tu workspace de Xano sin modificar código Kot
 
 ---
 
+para el usuario de cliente se puede crear uno directamente desde la app
+
+Usuario admin de prueba : usuarioadmin@gmail.com
+contraseña: usuarioadmin123
+
