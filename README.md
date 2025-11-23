@@ -110,4 +110,3 @@ Puedes ajustar estos paths según tu workspace de Xano sin modificar código Kot
 
 ---
 
-¿Necesitas extenderlo? Algunas ideas: soporte offline para el carrito, filtros avanzados (precio, categoría), notificaciones push con aprobación de pedidos o migrar la gestión de dependencias a un catálogo centralizado completo (`libs.versions.toml`) para evitar versiones duplicadas.
