@@ -56,9 +56,6 @@ class AddProductFragment : Fragment() {
      * Lanzador del selector de imágenes. Utiliza la variante
      * {@link ActivityResultContracts.PickMultipleVisualMedia} para permitir
      * seleccionar más de una imagen a la vez. Se limita a un máximo de 5
-     * elementos, pero puedes ajustar este número según tus necesidades. En el
-     * callback se actualiza la lista de URIs y se muestra la primera imagen
-     * seleccionada como vista previa.
      */
     private val picker = registerForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(5)
