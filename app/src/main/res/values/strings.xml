@@ -11,6 +11,17 @@
     <string name="orders_empty">Aún no tienes pedidos</string>
     <string name="title_order_detail">Pedido #%1$d</string>
 
+    <!-- Títulos de Pantallas -->
+    <string name="title_home">Xano Games Store</string>
+    <string name="title_login">Iniciar Sesión</string>
+    <string name="title_signup">Crear Cuenta</string>
+    <string name="title_add_product">Agregar Producto</string>
+    <string name="title_cart_full">Carrito de Compras</string>
+    <string name="title_order_detail_static">Detalle del pedido</string>
+    <string name="title_catalog">Catálogo de Productos</string>
+    <string name="title_my_profile">Mi Perfil</string>
+    <string name="title_users_management">Gestión de Usuarios</string>
+
     <!-- Acciones -->
     <string name="action_add">Agregar</string>
     <string name="action_add_to_cart">Añadir al carrito</string>
@@ -22,6 +33,9 @@
     <string name="action_pay">Pagar y solicitar envío</string>
     <string name="action_login">Iniciar sesión</string>
     <string name="action_signup">Crear cuenta</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_edit_profile">Editar Perfil</string>
+    <string name="action_logout">Cerrar Sesión</string>
     <string name="label_order_total">Total: %1$s</string>
 
     <!-- Placeholders / hints -->
@@ -31,13 +45,15 @@
     <string name="hint_stock">Stock</string>
     <string name="hint_brand">Marca</string>
     <string name="hint_category">Categoría</string>
-    <string name="hint_email">Email</string>
+    <string name="hint_email">Correo electrónico</string>
     <string name="hint_password">Contraseña</string>
     <string name="hint_name_optional">Nombre (opcional)</string>
+    <string name="hint_search">Buscar...</string>
 
     <!-- Mensajes -->
     <string name="cart_empty">El carrito está vacío</string>
     <string name="img_preview_desc">Vista previa de imagen seleccionada</string>
+    
     <!-- Admin: pestañas de pedidos -->
     <string name="title_orders_admin">Pedidos</string>
     <string name="orders_pending">Pendientes</string>

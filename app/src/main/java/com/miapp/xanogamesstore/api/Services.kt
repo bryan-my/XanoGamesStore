@@ -38,7 +38,6 @@ interface ProductService {
 
 /**
  * Servicio para crear carritos, actualizar stock y obtener los carritos.
- * Debe contener todos los métodos, incluyendo `getCarts`.
  */
 interface CartService {
 
@@ -55,8 +54,7 @@ interface CartService {
     ): Product
 
     /**
-     * Devuelve la lista de carritos/pedidos existentes. Si pasas un `user_id`,
-     * Xano filtrará los registros; si no, devolverá todos.
+     * Devuelve la lista de carritos/pedidos existentes.
      */
     @GET("cart")
     suspend fun getCarts(@Query("user_id") userId: Int? = null): List<CartDto>

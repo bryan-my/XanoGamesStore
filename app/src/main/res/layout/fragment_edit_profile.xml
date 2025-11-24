@@ -9,7 +9,7 @@
         android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nombre"
+        android:hint="@string/hint_name"
         android:inputType="textPersonName" />
 
     <EditText
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:hint="Correo electrónico"
+        android:hint="@string/hint_email"
         android:inputType="textEmailAddress" />
 
     <LinearLayout
@@ -31,13 +31,13 @@
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelar" />
+            android:text="@string/action_cancel" />
 
         <Button
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Guardar"
+            android:text="@string/action_save"
             android:layout_marginStart="16dp" />
     </LinearLayout>
 

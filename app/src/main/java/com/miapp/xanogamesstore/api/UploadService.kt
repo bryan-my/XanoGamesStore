@@ -25,7 +25,6 @@ interface UploadService {
     @Multipart
     @POST("upload")
     suspend fun upload(
-        // NOMBRE EXACTO DEL CAMPO QUE ESPERA XANO: "content"
         @Part content: MultipartBody.Part
     ): UploadResponse
 }

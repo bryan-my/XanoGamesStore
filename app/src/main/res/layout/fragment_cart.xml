@@ -14,7 +14,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Carrito de Compras" />
+            app:title="@string/title_cart_full" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
